@@ -1,0 +1,86 @@
+.admin-container{
+    background-color: white;
+    color: black;
+    width: 100%;
+    height: 100%;
+    padding-top: 5vh;
+    padding-bottom: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 35vh;
+    .second-container {
+        // background-color: red;
+        width: 45vw;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: left;
+        flex-direction: column;
+        border-radius: 5px;
+        
+        .third-container{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 15vh;
+            padding-inline: 1vw;
+            .head-container{
+                width: 50%;
+                display: flex;
+                height: 12vh;
+                gap: 10px;
+
+                h1{
+                    background-color: rgb(30,215,96);
+                    width:6vw;
+                    height:6vw;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-radius: 50%;
+                }
+
+                .txt-container{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    height: 100%;
+                }
+
+                img{
+                    width:6vw;
+                    height:6vw;
+                    border-radius: 50%;
+                }
+            }
+
+            .btn-container{
+                width: 50%;
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                .rounded-icon {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 40px; 
+                    height: 40px; 
+                    border-radius: 50%;
+                    background-color: rgb(192, 192, 192); 
+                    cursor: pointer; 
+                    transition: background-color 0.3s ease;
+                    
+                    &:hover {
+                      background-color: rgb(151, 151, 151); 
+                    }
+                  }
+            }
+
+        }
+
+
+    }
+
+}

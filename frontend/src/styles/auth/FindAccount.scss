@@ -1,0 +1,81 @@
+*{
+    text-decoration: none;
+}
+
+.find-container{
+    width: 100%;
+    height: calc(100% - 10vh); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 6vh; 
+    padding-top: 16vh;
+    .second-container {
+        background-color: rgb(16, 15, 15);
+        width: 35vw;
+        height: 50vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border-radius: 5px;
+        margin-bottom: 19vh;
+
+        .third-container {
+            gap: 20px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding-bottom: 3vh;
+            width: 100%;
+           
+            position: relative;
+
+            a{
+                color: white;
+                font-weight: lighter;
+                text-decoration: underline;
+             
+            }
+            h4{
+                font-weight: lighter;
+            }
+    
+            .input-field {
+                width: 50%; /* Make input fields 100% width */
+                height: 4vh;
+                padding-left: 10px;
+                margin-top: 10px;
+                border: 1px solid grey;
+                border-radius: 5px;
+                font-size: 0.9em;
+                box-sizing: border-box;
+            }
+
+            .btn-signup{
+                width: 30%;
+                background-color: rgb(30,215,96);
+                height: 4vh;
+                border: 1px solid black;
+                border-radius: 50px;
+                color: black;
+                font-weight: bold;
+                font-size: medium;
+                margin-top: 3vh;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                &:hover {
+                    background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+                }
+            }
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            position: absolute;
+            bottom: 14vh;
+        }
+    
+    }
+}

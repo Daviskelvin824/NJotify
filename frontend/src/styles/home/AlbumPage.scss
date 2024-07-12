@@ -1,0 +1,213 @@
+.album-container{
+    width: 100%;
+    // height: 100%;
+    background: rgb(0,0,0);
+    background: linear-gradient(360deg, rgba(0,0,0,0.989233193277311) 69%, rgba(117,36,36,1) 86%);
+    padding-inline: 1vw;
+    padding-bottom: 20vh;
+    .header-container{
+        padding-left: 1.2vw;
+        display: flex;
+        align-items: last baseline;
+        gap: 1.5rem;
+        img{
+            width: 27vh;
+            height: 27vh;
+            object-fit: cover;
+        }
+
+        .text-container{
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            
+            .txt-container{
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                h1{
+                    font-size: 1rem;
+                    color: black;
+                    font-weight: bold;
+                }
+            }
+
+            .img-con{
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: rgb(30,215,96);
+                align-items: center;
+                display: flex;
+                justify-content: center;
+
+            }
+        }
+
+    }
+
+
+    .icon-play{
+        padding-left: 0.5vw;
+        margin-top: 2vh;
+        width: 40px;
+        height: 40px;
+        color: rgb(30,215,96);
+    }
+
+    hr{
+        margin-inline: 1.3vw;
+        border-radius: 5px;
+        border-color: grey ;
+    }
+
+    .table-container{
+        margin-left: 1vw;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        padding-left: 0.5rem; 
+        color: #a7a7a7; 
+        width: 100%;
+        gap: 60rem;
+        @media (min-width: 640px) {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        
+          p {
+            margin: 0;
+          }
+        
+          .mr-4 {
+            margin-right: 1rem; 
+          }
+        
+          .hidden {
+            display: none;
+        
+            @media (min-width: 640px) {
+              display: block; 
+            }
+          }
+        
+          .m-auto {
+            margin: auto;
+          }
+        
+          .w-4 {
+            width: 1rem; 
+          }
+    }
+    .table-container2{
+        margin-inline: 1vw;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); 
+        margin-top: 0.5rem;
+        padding-left: 0.5rem; 
+        color: #a7a7a7; 
+        width: 97%;
+        gap: 60rem;
+        padding-block: 0.5vw;
+        cursor: pointer;
+
+        img{
+            width: 30px;
+            height: 30px;
+            margin-left: 0.5vw;
+        }
+        &:hover{
+            background-color: rgb(66, 66, 66);
+            border-radius: 3px;
+            
+        }
+
+        .txt2{
+            width: 100%;
+            gap: 10rem;
+            margin-left: 1vw;
+        }
+        .txt{
+            display: flex;
+            width: 69vw;
+            align-items: center;
+            b{
+                font-weight: lighter;
+            }
+        }
+
+
+        @media (min-width: 640px) {
+            grid-template-columns: repeat(2, 1fr); // sm:grid-cols-4
+          }
+        
+          p {
+            margin: 0;
+          }
+        
+          .mr-4 {
+            margin-right: 1rem; // mr-4
+          }
+        
+          .hidden {
+            display: none;
+        
+            @media (min-width: 640px) {
+              display: block; // sm:block
+            }
+          }
+        
+          .m-auto {
+            margin: auto; // m-auto
+          }
+        
+          .w-4 {
+            width: 1rem; // w-4 (16px)
+          }
+    }
+
+    .albums-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        margin-top: 20px;
+        margin-left: 1vw;
+        row-gap: 5rem;
+        
+      }
+      
+      .album-item {
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 5px;
+        transition: transform 0.2s ease-in-out;
+        height: 27vh;
+        width: 27vh;
+
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .album-info {
+            align-items: baseline;
+            margin-top: 0.5rem;
+            padding-bottom: 5vh;
+          }
+
+      }
+      
+      .album-item:hover {
+        transform: scale(1.05);
+      }
+      
+      .album-info {
+        margin-top: 10px;
+        text-align: left;
+        h5{
+            font-weight: lighter;
+        }
+      }
+      
+      
+}

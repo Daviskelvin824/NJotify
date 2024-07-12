@@ -1,0 +1,28 @@
+.navbar-container{
+    width: 100%;
+    background-color: black;
+    height: 7vh;
+    display: flex;
+    align-items: center;
+
+    .logo{
+        height: 100%;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 1vw;
+    }
+
+    h1{
+        margin-left: 0.5vw;
+        font-size: 2em;
+    }
+
+    .extra-content{
+        display: flex;
+        gap: 6px;
+        width: 100%;
+        justify-content: flex-end;
+        align-items: center;
+        padding-right: 28vw;
+    }
+}

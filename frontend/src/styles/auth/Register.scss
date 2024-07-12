@@ -1,0 +1,162 @@
+
+*{
+    text-decoration: none;
+}
+
+.register-container {
+    width: 100%;
+    height: calc(100% - 10vh); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 6vh; 
+    padding-top: 5vh;
+    
+    .second-container {
+      background-color: rgb(16, 15, 15);
+      width: 35vw;
+      height: 80vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      border-radius: 5px;
+      padding-top: 4vh;
+      .google-container{
+        
+        width: 50%;
+        height: 4vh;
+        border: 1px solid grey;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        &:hover {
+            background-color: rgba(211, 211, 211, 0.5); /* Light grey background on hover */
+        }
+    
+        .sign_in_with_google_and_apple_button{
+            font-weight: bold;
+            display: flex;
+            color: white;
+            align-items: center;
+            gap: 10px;
+        }
+        }
+      .third-container {
+        gap: 15px; 
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding-bottom: 3vh;
+        position: relative;
+      }
+      h1 {
+        margin-bottom: 10px;
+      }
+      .input-field {
+        width: 80%; /* Make input fields 100% width */
+        height: 4vh;
+        padding-left: 10px;
+        margin-top: 10px;
+        border: 1px solid grey;
+        border-radius: 5px;
+        font-size: 0.9em;
+        box-sizing: border-box;
+      }
+
+      .gender-field{
+        width: 80%; /* Make input fields 100% width */
+        height: 4vh;
+        border: 1px solid grey;
+        background-color: black;
+        color: white;
+        border-radius: 5px;
+        font-size: 0.9em;
+        padding-left: 10px;
+        box-sizing: border-box;
+      }
+
+      .country-field{
+        width: 80%; /* Make input fields 100% width */
+        height: 4vh;
+        border: 1px solid grey;
+        background-color: black;
+        color: white;
+        border-radius: 5px;
+        font-size: 0.9em;
+        box-sizing: border-box;
+        padding-left: 10px;
+      }
+
+      .btn-signup{
+        width: 40%;
+        background-color: rgb(30,215,96);
+        height: 4vh;
+        border: 1px solid black;
+        border-radius: 50px;
+        color: black;
+        font-weight: bold;
+        font-size: medium;
+        margin-top: 3vh;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        &:hover {
+            background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+        }
+      }
+
+      .dob-inputs{
+        width: 80%;
+        display: flex;
+        justify-content: space-between;
+        .dob-input{
+            background-color: black;
+            color: white;
+            width: 4.5vw;
+            border: 1px solid grey;
+            padding-left: 0.3vw;
+            height: 3vh;
+        }
+
+      }
+      .error-message {
+        color: red;
+        font-size: 0.9em;
+        position: absolute;
+        bottom: 8vh;
+      }
+  
+
+      .bottom-container{
+        display: flex;
+        justify-content: center;
+        width: 80%;
+        border-top: 1px solid rgb(44, 43, 43);
+        padding-top: 2vh;
+        height: 4vh;
+        margin-bottom: 2vh;
+        h4{
+            font-weight: lighter;
+            color: lightgray;
+            font-size: small;
+        }
+
+        a{
+            color:white;
+            font-weight: lighter;
+            text-decoration: underline;
+            
+        }
+
+      }
+
+
+    }
+}
+
+

@@ -1,0 +1,166 @@
+.edit-container{
+    background-color: rgb(26, 26, 26);
+    width: 100%;
+    height: 100%;
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .second-container {
+        // background-color: black;
+        width: 45vw;
+        height: 60vh;
+        display: flex;
+        justify-content: flex-start;
+        align-items: left;
+        flex-direction: column;
+        border-radius: 5px;
+
+        .head-container{
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+            gap: 10px;
+            
+            h1{
+                padding-block: 2vh;
+            }
+
+            h5{
+                font-weight: bold;
+            }
+
+            .rounded-icon {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 40px; 
+                height: 40px; 
+                border-radius: 50%;
+                background-color: #333; 
+                cursor: pointer; 
+                transition: background-color 0.3s ease;
+                
+                &:hover {
+                  background-color: rgb(66, 66, 66); 
+                }
+              }
+
+            .input-container{
+                padding-top: 1vh;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                label{
+                    font-size: small;
+                }
+
+                input{
+                    width: 100%;
+                    height: 4vh;
+                    padding: 0.5vw;
+                    border-style: none;
+                    border-radius: 3px;
+                    border: 1px solid #999;
+                }
+                select{
+                    color: white;
+                    background-color: black;
+                    width: 100%;
+                    height: 4vh;
+                    padding-inline: 0.2vw;
+                    border-style: none;
+                    border-radius: 3px;
+                    border: 1px solid #999;
+                }
+            }
+
+            .bottom-container{
+                padding-top: 1vh;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                flex-direction: row;
+                gap: 10px;
+                .bottominput-container{
+                    label{
+                        font-size: small;
+                    }
+                    input[type="date"]{
+                        width: 14vw;
+                        height: 4vh;
+                        padding: 0.5vw;
+                        border-style: none;
+                        border-radius: 3px;
+                        border: 1px solid #999;
+                        color: white;
+                        
+                    }
+                    input[type="date"]::-webkit-calendar-picker-indicator {
+                        filter: invert(1); 
+                    }
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .bottominput2-container{
+                    label{
+                        font-size: small;
+                    }
+                    input{
+                        width: 30vw;
+                        height: 4vh;
+                        padding: 0.5vw;
+                        border-style: none;
+                        border-radius: 3px;
+                        border: 1px solid #999;
+                        color: white;
+                        
+                    }
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+            }
+            .error-message {
+                color: red;
+                font-size: 0.9em;
+                position: absolute;
+                bottom: 27vh;
+                right: 28.3vw;
+            }
+            
+            .btn-container{
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                padding-top: 5vh;
+                gap: 3vw;
+                button{
+                    width: 20%;
+                    background-color: rgb(30,215,96);
+                    height: 5vh;
+                    border: 1px solid black;
+                    border-radius: 50px;
+                    color: black;
+                    font-weight: bold;
+                    font-size: medium;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                    &:hover {
+                        background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+                    }
+                }
+                a{
+                    color: white;
+                }
+            }
+        }
+
+    }
+}

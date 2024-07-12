@@ -1,0 +1,183 @@
+.track-container{
+    width: 100%;
+    height: auto;
+    padding-left: 1vw;
+    background: rgb(0,0,0);
+    padding-bottom: 20vh;
+    background: linear-gradient(360deg, rgba(0,0,0,0.989233193277311) 69%, rgba(36,40,112,1) 86%);
+    .header-container{
+        padding-left: 1.2vw;
+        display: flex;
+        align-items: last baseline;
+        gap: 1.5rem;
+        img{
+            width: 27vh;
+            height: 27vh;
+            object-fit: cover;
+        }
+
+        .text-container{
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            
+            .txt-container{
+                display: flex;
+                gap: 10px;
+                justify-content: flex-start;
+                h1{
+                    font-size: 1rem;
+                    color: black;
+                    font-weight: bold;
+                }
+            }
+
+            .img-con{
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: rgb(30,215,96);
+                align-items: center;
+                display: flex;
+                justify-content: center;
+
+            }
+        }
+
+    }
+
+    .head2-container{
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-top: 3vh;
+        .icon-play{
+            padding-left: 0.5vw;
+            width: 40px;
+            height: 40px;
+            color: rgb(30,215,96);
+            cursor: pointer;
+        }
+
+        .icon-add{
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+    }
+
+    .populartrack-container{
+        padding-top: 1vh;
+        padding-left: 1vw;
+        width: 100%;
+        align-items: baseline;
+
+        .track-item{
+            padding-inline: 0.5vw;
+            cursor: pointer;
+            &:hover{
+                background-color: rgb(66, 66, 66);
+                border-radius: 3px;
+                
+            }
+        }
+
+        .title{
+            align-items: left;
+            width: 20vw;
+        }
+
+        .txt2{
+            display: flex;  
+            gap: 20rem;
+            align-items: flex-start;
+            padding-right: 5vw;
+            
+
+        }
+
+        .txt{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            // gap: 20px;
+            padding-block: 1vh;
+            
+            
+            img{
+                width: 35px;
+                height: 35px;
+
+            }
+        }
+
+        
+        
+        
+    }
+
+    .btmalbum-container{
+        padding-left: 1.2vw;
+        display: flex;
+        margin-top: 5vh;
+        align-items: center;
+        cursor: pointer;
+        img{
+            width: 7vh;
+            height: 7vh;
+        }
+
+        .txt{
+            width: 90%;
+            background-color: rgb(43, 43, 43);
+            padding-left: 1vw;
+            height: 7.5vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+    }
+
+    .trackalbum-container{
+        margin-left: 1.2vw;
+        padding-block: 1vh;
+        display: flex;
+        margin-right: 3.8vw;
+        padding-inline: 1vw;
+        gap: 10px;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        .head{
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            .txt{
+                display: flex;
+                flex-direction: column;
+
+                h5{
+                    font-weight: normal;
+                }
+
+                h6{
+                    font-weight: lighter;
+                }
+            }
+        }
+
+        h5{
+            font-weight: lighter;
+        }
+
+        &:hover{
+            background-color: rgb(66, 66, 66);
+            border-radius: 3px;
+            
+        }
+    }
+
+}

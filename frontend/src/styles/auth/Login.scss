@@ -1,0 +1,140 @@
+*{
+    text-decoration: none;
+}
+.login-container {
+    width: 100%;
+    height: calc(100% - 10vh); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 6vh; 
+    padding-top: 6vh;
+    
+    .second-container {
+      background-color: rgb(16, 15, 15);
+      width: 35vw;
+      height: 70vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      border-radius: 5px;
+      margin-bottom: 9vh;
+      
+      .header-container{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+          h1 {
+            margin-bottom: 4vh;
+        }
+          .google-container{
+            width: 45%;
+            height: 4vh;
+            border: 1px solid grey;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5vh;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            &:hover {
+                background-color: rgba(211, 211, 211, 0.5); /* Light grey background on hover */
+            }
+        
+            .sign_in_with_google_and_apple_button{
+                font-weight: bold;
+                display: flex;
+                color: white;
+                align-items: center;
+                gap: 10px;
+            }
+      }
+    }
+      .third-container {
+        gap: 15px; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding-bottom: 3vh;
+        width: 100%;
+       
+        position: relative;
+
+        
+        a{
+            color: white;
+            font-weight: lighter;
+            text-decoration: underline;
+        }
+        h4{
+            font-weight: lighter;
+        }
+
+        .input-field {
+            width: 45%; /* Make input fields 100% width */
+            height: 4vh;
+            padding-left: 10px;
+            margin-top: 10px;
+            border: 1px solid grey;
+            border-radius: 5px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+          }
+
+          .btn-signup{
+            width: 45%;
+            background-color: rgb(30,215,96);
+            height: 4vh;
+            border: 1px solid black;
+            border-radius: 50px;
+            color: black;
+            font-weight: bold;
+            font-size: medium;
+            margin-top: 3vh;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            &:hover {
+                background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+            }
+          }
+
+
+      }
+      .error-message {
+        color: red;
+        font-size: 0.9em;
+        position: absolute;
+        bottom: 13vh;
+      }
+  
+
+      .bottom-container{
+        display: flex;
+        justify-content: center;
+        width: 80%;
+        border-top: 1px solid rgb(44, 43, 43);
+        padding-top: 6vh;
+        height: 4vh;
+        margin-bottom: 2vh;
+        h4{
+            font-weight: lighter;
+            color: lightgray;
+            font-size: small;
+        }
+
+        a{
+            color:white;
+            font-weight: lighter;
+            text-decoration: underline;
+            
+        }
+
+      }
+    }
+}
+

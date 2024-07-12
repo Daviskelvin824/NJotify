@@ -1,0 +1,102 @@
+.footer {
+    background-color: #000000;
+    color: #fff;
+    width: 100%;
+    
+    &__container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 5vh 5vh 10vh 5vh;
+    }
+
+    &__column {
+        flex: 1;
+
+        h4 {
+            font-size: 1em;
+            padding-bottom: 0.2vh;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                a {
+                    color: #777;
+                    text-decoration: none;
+                    transition: color 0.3s;
+                    font-size: 0.9em;
+
+                    &:hover {
+                        color: #999;
+                    }
+                }
+            }
+        }
+    }
+
+    &__icons {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 5vw;
+
+        a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #666;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-left: 1vw;
+
+            &:hover {
+                background-color: #444;
+                transform: scale(1.1);
+            }
+
+            svg {
+                color: #fff;
+                font-size: 1.5em;
+            }
+        }
+    }
+
+    &__bottom {
+        border-top: 1px solid #444;
+        padding: 3vh 3vh 3vh 3vh;
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0;
+
+            li {
+                display: inline;
+                margin: 0 10px;
+                font-size: 0.95em;
+
+                a {
+                    color: #fff;
+                    text-decoration: none;
+                    transition: color 0.3s;
+
+                    &:hover {
+                        color: #ccc;
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+
+        p{
+            font-size: 1em;
+        }
+    }
+}

@@ -1,0 +1,20 @@
+.display-container{
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    .second-container{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        background-color: transparent;
+        &.overflow-auto {
+            overflow: auto;
+          }
+
+        
+    }
+
+}
