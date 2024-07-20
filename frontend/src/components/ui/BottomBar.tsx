@@ -17,36 +17,58 @@ import React, { useContext } from "react";
 import logo from "../../assets/cameraicon.png";
 import { PlayerContext } from "../../context/PlayerContext";
 const BottomBar = () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
   const {
     seekBar,
     playStatus,
     play,
     pause,
+    next,
     time,
     seekSong,
     seekBg,
     seekVolume,
     increaseVol,
     seekVolumeBar,
-    albumname,
-    artistname,
-    albumimage,
+    queue,
+    setShowQueueBar,
+    showQueueBar,
+    setShowSongDetailbar,
+    showSongDetailbar,
   } = useContext(PlayerContext);
+
+  const handleSongDetail = () => {
+    setShowSongDetailbar(!showSongDetailbar);
+    setShowQueueBar(false);
+  };
+
+  const handleQueueBar = () => {
+    setShowQueueBar(!showQueueBar);
+    setShowSongDetailbar(false);
+  };
 
   return (
     <div className="bottoms-container">
       <div className="left-container">
-        {albumimage ? (
-          <img src={"http://localhost:8888/files/" + albumimage} alt="" />
+        {queue.length > 0 ? (
+          <img
+            src={"http://localhost:8888/files/" + queue[0].album.imagepath}
+            alt=""
+          />
         ) : (
           <img src={logo} alt="" />
         )}
 
         <div>
-          {albumname ? <p>{albumname}</p> : <p>Album Name</p>}
-          {artistname ? <h5>{artistname}</h5> : <h5>Artist Name</h5>}
+          {queue.length > 0 ? (
+            <p>{queue[0].track.tracktitles.slice(0, 20)}</p>
+          ) : (
+            <p>Track Name</p>
+          )}
+          {queue.length > 0 ? (
+            <h5>{queue[0].artist.username}</h5>
+          ) : (
+            <h5>Artist Name</h5>
+          )}
         </div>
       </div>
 
@@ -64,7 +86,9 @@ const BottomBar = () => {
             </div>
           )}
 
-          <FontAwesomeIcon icon={faForwardStep} className="icon" />
+          <div onClick={next}>
+            <FontAwesomeIcon icon={faForwardStep} className="icon" />
+          </div>
           <FontAwesomeIcon icon={faRepeat} className="icon" />
         </div>
         <div className="bottom-container">
@@ -84,8 +108,15 @@ const BottomBar = () => {
       </div>
 
       <div className="right-container">
-        <FontAwesomeIcon icon={faSquareCaretRight} />
-        <FontAwesomeIcon icon={faBars} />
+        <div onClick={handleSongDetail}>
+          <FontAwesomeIcon
+            icon={faSquareCaretRight}
+            style={{ cursor: "pointer" }}
+          />
+        </div>
+        <div onClick={handleQueueBar}>
+          <FontAwesomeIcon icon={faBars} style={{ cursor: "pointer" }} />
+        </div>
         <FontAwesomeIcon icon={faVolumeLow} />
         <div ref={seekVolume} onClick={increaseVol} className="bar-container">
           <hr

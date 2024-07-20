@@ -1,0 +1,149 @@
+.songdetailbar-container{
+    width: 23%;
+    height: 91%;
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    background-color: black;
+    flex-direction: column;
+    padding-bottom: 2vh;
+    padding-top: 2vh;
+    padding-left: 0.5vw;
+    padding-right: 0.5vw;
+    row-gap: 0.5vw;
+    overflow-y: scroll;
+    .title-container{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-inline: 0.5vw;
+        margin-bottom: 1vw;
+    }
+
+    .currsong-container{
+        padding: 0.5vw;
+        margin-bottom: 1vw;
+        cursor: pointer;
+        .item-curr{
+            display: flex;
+            flex-direction: column;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        img{
+            width: 100%;
+            height: 35vh;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        p{
+            font-weight: 600;
+            color: grey;
+        }
+    }
+
+    .about-artist{
+        border-radius: 5px;
+        margin-bottom: 1vw;
+        margin-inline: 0.5vw;
+        background-color: rgb(19, 19, 19);
+        img{
+            width: 100%;
+            height: 25vh;
+            object-fit: cover;
+            border-radius: 5px;
+            filter: brightness(0.65);
+        }
+        .abouttxt{
+            margin-top: -180px;
+            margin-left: 1vw;
+            margin-bottom: 170px;
+            filter: brightness(1);
+        }
+        .txt-container{
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-inline: 1vw;
+            margin-bottom: 2vw;
+            .follow-container{
+                border: 1px solid grey;
+                border-radius: 30px;
+                width:5vw;
+                align-items: center;
+                display: flex;
+                justify-content: center;
+                height: 3vh;
+                cursor: pointer;
+                background-color: transparent;
+                h5{
+                    font-weight: normal;
+                }
+                transition: background-color 0.3s ease;
+                &:hover {
+                    background-color: rgb(59, 53, 53); 
+                }
+            }
+
+            .first{
+                display: flex;
+                justify-content: space-between;
+            }
+
+            p{
+                font-weight: normal;
+                font-size: small;
+                color: grey;
+            }
+        }
+
+    }
+
+    .nextinqueue{
+        border-radius: 5px;
+        margin-bottom: 1vw;
+        margin-inline: 0.5vw;
+        background-color: rgb(19, 19, 19);
+        .head1{
+            display: flex;
+            justify-content: space-between;
+            padding-inline: 1vw;
+            margin-top: 1vw;
+            .openqueue{
+                font-weight: normal;
+                color: grey;
+                cursor: pointer;
+                &:hover{
+                    text-decoration: underline;
+                }
+            }
+        }
+        .now-container{
+            padding-inline: 1vw;
+            margin-bottom: 1vw;
+            background-color: rgb(19, 19, 19);
+            border-radius: 5px;
+            img{
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+            }
+            .now2-container{
+                align-items: center;
+                margin-top: 1vw;
+                display: flex;
+                gap: 10px;
+                cursor: pointer;
+                .txt{
+    
+                    p{
+                        font-weight: lighter;
+                        font-size: small;
+                    }
+                }
+            }
+        }
+    }
+}

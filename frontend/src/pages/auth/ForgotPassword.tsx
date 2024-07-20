@@ -1,25 +1,31 @@
 import "../../styles/auth/ForgotPassword.scss";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { resetpassword } from "../api-calls/auth/resetpassword";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 
 const ForgotPassword = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const email = queryParams.get("email");
+  const token = queryParams.get("token");
   const [password, setPassword] = useState("");
   const [confirmpassword, setconfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { user, loading } = useAuthWithLoad();
+  useEffect(() => {
+    if (loading) return;
+    if (user) navigate("/home");
+  }, [loading, user, navigate]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onBtnClick = async (e: any) => {
     e.preventDefault();
 
     if (
-      !email ||
-      email.trim() === "" ||
+      !token ||
+      token.trim() === "" ||
       password === "" ||
       confirmpassword === ""
     ) {
@@ -30,7 +36,7 @@ const ForgotPassword = () => {
       return;
     }
 
-    const response = await resetpassword(email, password);
+    const response = await resetpassword(token, password);
     if (response === -1) {
       setErrorMessage("Reset Password Failed, Due to Server Error");
     } else if (response === -2) setErrorMessage("Invalid Password Format!");

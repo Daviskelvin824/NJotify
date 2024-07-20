@@ -33,6 +33,10 @@ type ArtistRequest struct {
 	ArtistId int `json:"artistid"`
 }
 
+type EmailRequest struct{
+	Email string `json:"email"`
+}
+
 func (controller *UserController) Create(ctx *gin.Context) {
 	createUserReq := request.CreateUserRequest{}
 	err := ctx.ShouldBindJSON(&createUserReq)
@@ -253,13 +257,18 @@ func (controller *UserController) ForgotPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email"})
 		return
 	}
-	err := controller.userService.ActivateUserEmail(email)
+	//generate jwt
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"subject": email,
+		"expire":  time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify account"})
+		ctx.String(200, "Failed to Create Token")
 		return
 	}
-
-	redirectURL := fmt.Sprintf("http://localhost:5173/forgot-password?email=%s", email)
+	redirectURL := fmt.Sprintf("http://localhost:5173/forgot-password?token=%s", tokenString)
 	ctx.Redirect(http.StatusSeeOther, redirectURL)
 }
 
@@ -275,30 +284,55 @@ func (controller *UserController) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	// Validate the last password is not the same as the new password
-	user, err := controller.userService.FindByEmail(resetReq.Email)
-	helper.CheckPanic(err)
-	fmt.Println(user)
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(resetReq.Password))
-	if err == nil {
-		// Passwords match, new password cannot be the same as the old password
-		ctx.JSON(200, "New password cannot be the same as the old password")
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(resetReq.Password), bcrypt.DefaultCost)
+	//parse jwt
+	token, err := jwt.Parse(resetReq.Email, func(token *jwt.Token) (interface{}, error) {
+		// Make sure that the token's signature method matches our expectation
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("SECRET")), nil
+	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to parse token"})
 		return
 	}
 
-	//tinggal update
-	user.Password = string(hashedPassword)
-	resetErr := controller.userService.ResetUserPassword(&user)
-	if resetErr != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
-		return
+	// Extract the email from the token claims
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		email, ok := claims["subject"].(string)
+		if !ok {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token claims"})
+			return
+		}
+
+		// Validate the last password is not the same as the new password
+		user, err := controller.userService.FindByEmail(email)
+		helper.CheckPanic(err)
+		fmt.Println(user)
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(resetReq.Password))
+		if err == nil {
+			// Passwords match, new password cannot be the same as the old password
+			ctx.JSON(200, "New password cannot be the same as the old password")
+			return
+		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(resetReq.Password), bcrypt.DefaultCost)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+			return
+		}
+
+		//tinggal update
+		user.Password = string(hashedPassword)
+		resetErr := controller.userService.UpdateUser(&user)
+		if resetErr != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
+			return
+		}
+	} else {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 	}
+
 
 }
 
@@ -422,6 +456,62 @@ func (controller *UserController) GetArtist(ctx *gin.Context) {
 	fmt.Println("req = ", req)
 
 	result := controller.userService.GetUserByArtistId(uint(req.ArtistId))
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func (controller *UserController) AddProfileImage(ctx *gin.Context){
+	form, err := ctx.MultipartForm()
+	helper.CheckPanic(err)
+	email := form.Value["email"]
+	files := form.File["profileimg"]
+
+	profileReq := request.AddProfileImageRequest{}
+	profileReq.Email = email[0]
+	profileReq.ProfileImage = files[0].Filename
+	ctx.SaveUploadedFile(files[0], "files/"+files[0].Filename)
+
+	user,err := controller.userService.FindByEmail(profileReq.Email)
+	helper.CheckPanic(err)
+
+	user.ProfilePageImage = &profileReq.ProfileImage
+	resetErr := controller.userService.UpdateUser(&user)
+	if resetErr != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
+		return
+	}
+
+}
+
+func(controller *UserController) GetUserByEmail(ctx *gin.Context){
+	var email EmailRequest
+	err := ctx.ShouldBindJSON(&email)
+	helper.CheckPanic(err)
+	fmt.Println("req = ", email)
+
+	user,err := controller.userService.FindByEmail(email.Email)
+	helper.CheckPanic(err)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   user,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) GetFFM(ctx *gin.Context){
+	var userId ArtistRequest
+	err := ctx.ShouldBindJSON(&userId)
+	helper.CheckPanic(err)
+	fmt.Println("req = ", userId)
+
+	result := controller.userService.GetFFM(uint(userId.ArtistId))
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",

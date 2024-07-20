@@ -26,13 +26,16 @@ const TopBar = () => {
     window.open("/manage-account", "_blank");
   };
 
+  const handleProfileClicked = () => {
+    window.open(`/profilepage/${user?.email}`, "_blank");
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const handlelogout = async () => {
       const response = await logout();
       console.log(response);
       if (response === "Successfully logged out") {
-        // Check for a successful logout response
         navigate("/login");
       }
     };
@@ -71,10 +74,21 @@ const TopBar = () => {
             className="rounded-icon profile-icon"
             onClick={handleProfileClick}
           >
-            <FontAwesomeIcon icon={faUserCircle} />
+            {user?.profilepageimage ? (
+              <img
+                src={"http://localhost:8888/files/" + user.profilepageimage}
+                alt="Profile Preview"
+                className="img-review"
+              />
+            ) : (
+              <FontAwesomeIcon icon={faUserCircle} className="icon" />
+            )}
           </div>
           {showDropdown && (
             <div className="dropdown-menu">
+              <div className="dropdown-item" onClick={handleProfileClicked}>
+                Profile
+              </div>
               <div className="dropdown-item" onClick={handleManageAccount}>
                 Manage Account
               </div>

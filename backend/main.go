@@ -83,18 +83,22 @@ func main() {
 	//set repo
 	userRepo := repository.NewUserRepositoryImpl(db)
 	albumRepo := repository.NewAlbumRepositoryImpl(db)
+	playlistRepo := repository.NewPlaylistRepositoryImpl(db)
 
 	//set service
 	userService := service.NewUserServiceImpl(userRepo, validator)
 	albumService := service.NewAlbumServiceImpl(albumRepo, validator)
+	playlistService := service.NewPlaylistServiceImpl(playlistRepo,validator)
 
 	// set controller
 	userController := controller.NewUserController(userService)
 	albumController := controller.NewAlbumController(albumService)
+	playlistController := controller.NewPlaylistController(playlistService)
 
 	//set routing
 	router.UserRoute(routes, userController)
 	router.AlbumRoute(routes, albumController)
+	router.PlaylistRoute(routes, playlistController)
 
 	server := &http.Server{
 		Addr:    ":8888",

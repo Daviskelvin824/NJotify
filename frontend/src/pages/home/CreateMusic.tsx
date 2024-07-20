@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import "../../styles/home/CreateMusic.scss";
 
 import {
@@ -13,7 +11,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import TopBar from "../../components/home/TopBar";
-import useAuth from "../../hooks/useAuth";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 import type { User } from "../../model/User";
 import { createalbum } from "../api-calls/home/createalbum";
 import { createtrack } from "../api-calls/home/createtrack";
@@ -29,7 +27,7 @@ const CreateMusic = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   const incrementTrackCount = () => {
     setTrackCount((prevCount) => prevCount + 1);
   };
@@ -51,7 +49,7 @@ const CreateMusic = () => {
 
   const handleTrackUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
-    index: number,
+    index: number
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -73,11 +71,9 @@ const CreateMusic = () => {
   };
 
   useEffect(() => {
-    console.log(user);
-    if (user?.email === "") {
-      navigate("/login");
-    }
-  }, [navigate, user]);
+    if (loading) return;
+    if (!user) navigate("/login");
+  }, [loading, user, navigate]);
 
   const trackCounts = Object.keys(trackNames).length;
 
@@ -108,14 +104,14 @@ const CreateMusic = () => {
         const albumResponse = await createalbum(
           albumTitle,
           albumImage,
-          albumType,
+          albumType
         );
         if (albumResponse == -1)
           setErrorMessage("Create Album fail due to Server Error");
         const trackResponse = await createtrack(
           albumResponse,
           trackNames,
-          trackPaths,
+          trackPaths
         );
         if (trackResponse == -1)
           setErrorMessage("Create Album fail due to Server Error");

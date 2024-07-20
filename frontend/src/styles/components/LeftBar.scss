@@ -1,18 +1,16 @@
 .main-container{
-    width: 25%;
+    width: 23%;
     height: 91%;
     display: flex;
-    overflow-y: scroll;
     flex-grow: 0;
     flex-shrink: 0;
     background-color: black;
-    border-right: 1px solid;
-    border-color: #2d3748;
     flex-direction: column;
     position: relative;
     padding-bottom: 2vh;
     padding-top: 1vh;
     padding-left: 0.5vw;
+    padding-right: 0.5vw;
     row-gap: 0.5vw;
 
     .head-container{
@@ -21,7 +19,7 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        background-color: rgb(19, 19, 19);;
+        background-color: rgb(19, 19, 19);
         border-radius: 5px;
         padding-block: 1vw;
 
@@ -47,11 +45,11 @@
         padding-top: 2vh;
         border-radius: 5px;
         background-color: rgb(19, 19, 19);
-
+        
         .library{
             display: flex;
             justify-content: space-between;
-
+            padding-bottom: 0.5vw;
             .yourlib{
                 display: flex;
                 justify-content: center;
@@ -81,6 +79,32 @@
                 }
                 
             }
+        }
+
+        .playlist-container{
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+            padding-bottom: 13vw;
+      
+            .item-container{
+                padding-top: 1vw;
+                margin-inline: 1.5vw;
+                display: flex;
+                gap: 10px;
+                cursor: pointer;
+                img{
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 3px;
+                }
+
+                .txt-container{
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
+
         }
     }
 }

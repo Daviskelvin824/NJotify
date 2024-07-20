@@ -15,13 +15,18 @@ import CreateMusic from "../pages/home/CreateMusic";
 import Home from "../pages/home/Home";
 import TrackPage from "../pages/home/TrackPage";
 import YourPost from "../pages/home/YourPost";
+import PlaylistPage from "../pages/home/PlaylistPage";
+import ProfilePage from "../pages/home/ProfilePage";
+import VerifiedArtistPage from "../pages/home/VerifiedArtistPage";
+import SearchPage from "../pages/home/SearchPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { path: "/", element: <Navigate to="/home" /> }, // Redirect root to /register
+      { path: "/", element: <Navigate to="/home" /> },
+      { path: "/*", element: <Home /> },
       { path: "/register", element: <Register /> },
       { path: "/login", element: <Login /> },
       { path: "/find-account", element: <FindAccount /> },
@@ -36,6 +41,10 @@ export const router = createBrowserRouter([
       { path: "/yourpost", element: <YourPost /> },
       { path: "/albumpage/:id", element: <AlbumPage /> },
       { path: "/trackpage/:index/:id", element: <TrackPage /> },
+      { path: "/playlistpage/:id", element: <PlaylistPage /> },
+      { path: "/profilepage/:email", element: <ProfilePage /> },
+      { path: "/verifiedartist/:email", element: <VerifiedArtistPage /> },
+      { path: "/searchpage", element: <SearchPage /> },
     ],
   },
 ]);

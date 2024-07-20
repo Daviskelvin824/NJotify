@@ -9,13 +9,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import TopBar from "../../components/home/TopBar";
 import ManageFooter from "../../components/ui/ManageFooter";
 import { PlayerContext } from "../../context/PlayerContext";
-import useAuth from "../../hooks/useAuth";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 import type { Album } from "../../model/Album";
 import type { User } from "../../model/User";
 import { getartist } from "../api-calls/auth/getartist";
 import { getalbumbyartist } from "../api-calls/home/getalbumbyartist";
 import { getalbumbyid } from "../api-calls/home/getalbumbyid";
 import { gettracksbbyalbum } from "../api-calls/home/gettracksbyalbum";
+import { SingleTrack } from "../../model/SingleTrack";
 const AlbumPage = () => {
   const { id } = useParams();
   const [currAlbum, setcurrAlbum] = useState<Album>();
@@ -23,11 +24,16 @@ const AlbumPage = () => {
   const [artist, setartist] = useState<User>();
   const [tracks, settracks] = useState<string[]>([]);
   const [trackTitle, settrackTitle] = useState<string[]>([]);
-  const [trackIds, settrackIds] = useState<[]>([]);
+  const [trackIds, settrackIds] = useState<number[]>([]);
   const [trackDurations, setTrackDurations] = useState<number[]>([]);
+  const [isQueueReady, setIsQueueReady] = useState(false);
   const navigate = useNavigate();
-  const { playStatus, play, pause } = useContext(PlayerContext);
-  const user: User | null = useAuth();
+  const { playStatus, play, pause, setQueue } = useContext(PlayerContext);
+  const { user, loading } = useAuthWithLoad();
+  useEffect(() => {
+    if (loading) return;
+    if (!user) navigate("/login");
+  }, [loading, user, navigate]);
 
   const getCurrAlbum = async () => {
     const response = await getalbumbyid(Number(id));
@@ -57,11 +63,22 @@ const AlbumPage = () => {
       const response = await gettracksbbyalbum(currAlbum.albumid);
       console.log("Track = ", response);
       const titles = response.tracktitles.map((title: string) =>
-        title.replace(/"/g, ""),
+        title.replace(/"/g, "")
       );
       settracks(response.filepaths);
       settrackTitle(titles);
-      settrackIds(response.trackid);
+      if (Array.isArray(response.trackid)) {
+        settrackIds(
+          response.trackid.filter(
+            (id: number | undefined): id is number => id !== undefined
+          )
+        );
+      } else {
+        console.error(
+          "Expected response.trackid to be an array, but got:",
+          response.trackid
+        );
+      }
     }
   };
 
@@ -74,12 +91,6 @@ const AlbumPage = () => {
     });
     return formatTime(totalSeconds);
   };
-
-  useEffect(() => {
-    if (user?.email === "") {
-      navigate("/login");
-    }
-  }, [user]);
 
   useEffect(() => {
     if (id) {
@@ -119,8 +130,6 @@ const AlbumPage = () => {
 
       setTrackDurations(durations);
     };
-
-    // Call fetchTrackDurations when tracks change
     if (tracks.length > 0) {
       void fetchTrackDurations();
     }
@@ -145,6 +154,35 @@ const AlbumPage = () => {
       navigate(`/trackpage/${trackId}/${currAlbum.albumid}`);
     }
   };
+
+  const handlePlay = () => {
+    if (!artist || !currAlbum) {
+      return;
+    }
+
+    const t = trackIds.map<SingleTrack>((id, idx) => ({
+      albumid: currAlbum.albumid ?? 0,
+      filepaths: tracks[idx],
+      tracktitles: trackTitle[idx],
+      trackid: id,
+    }));
+
+    const trackContexts = t.map((track) => ({
+      track,
+      album: currAlbum,
+      artist,
+    }));
+
+    setQueue(trackContexts);
+    setIsQueueReady(true);
+  };
+
+  useEffect(() => {
+    if (isQueueReady) {
+      play();
+      setIsQueueReady(false);
+    }
+  }, [isQueueReady, play]);
 
   return (
     <div className="album-container">
@@ -179,11 +217,19 @@ const AlbumPage = () => {
       </div>
 
       {playStatus ? (
-        <div className="icon-play" onClick={pause}>
+        <div
+          className="icon-play"
+          onClick={pause}
+          style={{ cursor: "pointer" }}
+        >
           <FontAwesomeIcon icon={faCirclePause} className="icon-play" />
         </div>
       ) : (
-        <div className="icon-play" onClick={play}>
+        <div
+          className="icon-play"
+          onClick={handlePlay}
+          style={{ cursor: "pointer" }}
+        >
           <FontAwesomeIcon icon={faCirclePlay} className="icon-play" />
         </div>
       )}

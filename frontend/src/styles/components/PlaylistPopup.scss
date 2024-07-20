@@ -1,0 +1,145 @@
+.playlist-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+  }
+  
+  .playlist-popup {
+    background: rgb(19, 19, 19);
+    padding: 70px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+
+    
+    .form-group,
+    .form-group-right {
+        padding-bottom: 3vh;
+        .input-container{
+          display: flex;
+          flex-direction: column;
+
+          textarea{
+            border: 1px solid grey;
+            background-color: black;
+            border-radius: 5px;
+            height: 9.5vh;
+            color: white;
+            padding: 0.5vw;
+            resize: none;
+          }
+
+        }
+          display: flex;
+          flex-direction: row;
+          gap: 1rem;
+  
+          label {
+            color: white;
+          }
+  
+          input[type="file"],
+          input[type="text"] {
+            padding: 0.5rem;
+            border: 1px solid #999;
+            border-radius: 4px;
+            width: 100%;
+          }
+     
+          .icon-camera{
+            height: 40%;
+            color: #999;
+            font-weight: lighter;
+          }
+          .drop-container {
+            position: relative;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 8vw;
+            width: 8vw;
+            padding: 5px;
+            border-radius: 10px;
+            border: 2px dashed #999 ;
+            color: #444;
+            cursor: pointer;
+
+            .album-image {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 10px;
+            }
+            
+          }
+          .upload-file{
+            display: none;
+          }
+          
+          .drop-title {
+            color: #999;
+            font-size: 0.6em;
+            font-weight: bold;
+            text-align: center;
+            transition: color .2s ease-in-out;
+          }
+        }
+    
+  }
+  
+  .playlist-popup h1 {
+    margin-bottom: 20px;
+  }
+  
+  .playlist-popup input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid grey;
+    border-radius: 3px;
+  }
+  
+  .popup-buttons {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 20px;
+    a{
+      cursor: pointer;
+     
+      &:hover{
+
+        text-decoration: underline;
+      }
+    }
+
+    .error-message{
+      color: red;
+    }
+  }
+  
+  .popup-buttons button {
+    padding: 6px 26px;
+    border: none;
+    background: rgb(30,215,96);
+    color: black;
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    &:hover {
+        background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+    }
+    
+  }
+  
+  

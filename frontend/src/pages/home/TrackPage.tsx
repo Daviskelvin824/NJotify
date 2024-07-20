@@ -12,7 +12,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import TopBar from "../../components/home/TopBar";
 import ManageFooter from "../../components/ui/ManageFooter";
 import { PlayerContext } from "../../context/PlayerContext";
-import useAuth from "../../hooks/useAuth";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 import type { Album } from "../../model/Album";
 import type { PopularTrack } from "../../model/PopularTrack";
 import type { User } from "../../model/User";
@@ -21,30 +21,30 @@ import { getalbumbyid } from "../api-calls/home/getalbumbyid";
 import { getpopulartrackbyartist } from "../api-calls/home/getpopulartrackbyartist";
 import { gettrackbytrackid } from "../api-calls/home/gettrackbytrackid";
 import { gettracksbbyalbum } from "../api-calls/home/gettracksbyalbum";
+import { SingleTrack } from "../../model/SingleTrack";
+import { Playlist } from "../../model/Playlist";
+import { getuserplaylist } from "../api-calls/home/getUserPlaylist";
+import { addtoplaylist } from "../api-calls/home/addtoplaylist";
 const TrackPage = () => {
   const { index, id } = useParams();
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   const navigate = useNavigate();
   const [currAlbum, setcurrAlbum] = useState<Album>();
   const [track, settrack] = useState("");
   const [artist, setartist] = useState<User>();
-  const [trackalbumname, settrackalbumname] = useState([]);
-  const [trackalbumtrackid, settrackalbumtrackid] = useState([]);
+  const [trackalbumname, settrackalbumname] = useState<string[]>([]);
+  const [trackalbumtrackid, settrackalbumtrackid] = useState<number[]>([]);
   const [trackalbumfile, settrackalbumfile] = useState<string[]>([]);
   const [trackTitle, settrackTitle] = useState("");
   const [trackDuration, settrackDuration] = useState("");
   const [populartrackDuration, setpopulartrackDuration] = useState([]);
   const [trackalbumduration, settrackalbumduration] = useState([]);
   const [popularTrack, setpopularTrack] = useState<PopularTrack[]>([]);
-  const [localPlayStatus, setLocalPlayStatus] = useState(false);
-  const {
-    playStatus,
-    playWithId,
-    pause,
-    setalbumname,
-    setartistname,
-    setalbumimage,
-  } = useContext(PlayerContext);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [singletrack, setsingletrack] = useState<SingleTrack>();
+  const [isQueueReady, setIsQueueReady] = useState(false);
+  const [playlist, setPlaylist] = useState<Playlist[]>([]);
+  const { playStatus, setQueue, pause, play } = useContext(PlayerContext);
 
   const getCurrAlbum = async () => {
     const response = await getalbumbyid(Number(id));
@@ -57,6 +57,7 @@ const TrackPage = () => {
     console.log(response);
     const titles = response.tracktitles.replace(/"/g, "");
     settrack(response.filepaths);
+    setsingletrack(response);
     settrackTitle(titles);
   };
 
@@ -82,12 +83,30 @@ const TrackPage = () => {
       const response = await gettracksbbyalbum(currAlbum.albumid);
       console.log("Track = ", response);
       const titles = response.tracktitles.map((title: string) =>
-        title.replace(/"/g, ""),
+        title.replace(/"/g, "")
       );
       settrackalbumname(titles);
-      settrackalbumtrackid(response.trackid);
+      if (Array.isArray(response.trackid)) {
+        settrackalbumtrackid(
+          response.trackid.filter(
+            (id: number | undefined): id is number => id !== undefined
+          )
+        );
+      } else {
+        console.error(
+          "Expected response.trackid to be an array, but got:",
+          response.trackid
+        );
+      }
       settrackalbumfile(response.filepaths);
       console.log("track album file =", trackalbumfile);
+    }
+  };
+
+  const fetchUserPlaylist = async () => {
+    if (user?.userid) {
+      const response = await getuserplaylist(user?.userid);
+      setPlaylist(response);
     }
   };
 
@@ -98,10 +117,9 @@ const TrackPage = () => {
   }, [id, index]);
 
   useEffect(() => {
-    if (user?.email === "") {
-      navigate("/login");
-    }
-  }, [user]);
+    if (loading) return;
+    if (!user) navigate("/login");
+  }, [loading, user, navigate]);
 
   useEffect(() => {
     if (currAlbum?.artistid) {
@@ -113,6 +131,8 @@ const TrackPage = () => {
       void getTrackByTrackIds();
       void getTrackFromAlbum();
     }
+
+    void fetchUserPlaylist();
   }, [currAlbum]);
 
   useEffect(() => {
@@ -122,7 +142,6 @@ const TrackPage = () => {
       audio.addEventListener("loadedmetadata", () => {
         settrackDuration(audio.duration);
       });
-      setLocalPlayStatus(false);
     }
   }, [track]);
 
@@ -185,10 +204,6 @@ const TrackPage = () => {
     }
   }, [trackalbumfile]);
 
-  useEffect(() => {
-    setLocalPlayStatus(playStatus);
-  }, [playStatus]);
-
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -201,22 +216,28 @@ const TrackPage = () => {
   };
 
   const handlePlayClick = () => {
-    if (track) {
-      playWithId(track);
-      setLocalPlayStatus(true);
-      if (currAlbum?.albumname) {
-        setalbumname(currAlbum.albumname);
-        setalbumimage(currAlbum.imagepath);
-      }
-      if (artist?.username) {
-        setartistname(artist.username);
-      }
+    if (singletrack && artist && currAlbum) {
+      const trackContext = {
+        track: singletrack,
+        album: currAlbum,
+        artist,
+      };
+
+      setQueue([trackContext]);
+      setIsQueueReady(true);
     }
   };
 
+  useEffect(() => {
+    if (isQueueReady) {
+      play();
+      setIsQueueReady(false);
+    }
+  }, [isQueueReady, play]);
+
   const handlePauseClick = () => {
     pause();
-    setLocalPlayStatus(false); // Update local play status
+    // setLocalPlayStatus(false);
   };
 
   const handleTrackClick = (index: number) => {
@@ -224,6 +245,19 @@ const TrackPage = () => {
 
     if (currAlbum?.albumid) {
       navigate(`/trackpage/${trackId}/${currAlbum.albumid}`);
+    }
+  };
+
+  const handleAddToPlaylist = async (selectedIndex: string) => {
+    if (selectedIndex) {
+      const selectedPlaylist = playlist[Number(selectedIndex)];
+      console.log("Adding track to playlist:", selectedPlaylist);
+
+      if (singletrack?.trackid) {
+        await addtoplaylist(selectedPlaylist.playlistid, singletrack?.trackid);
+      }
+
+      setShowDropdown(false);
     }
   };
 
@@ -255,12 +289,20 @@ const TrackPage = () => {
       </div>
 
       <div className="head2-container">
-        {localPlayStatus ? (
-          <div className="icon-play" onClick={handlePauseClick}>
+        {playStatus ? (
+          <div
+            className="icon-play"
+            onClick={handlePauseClick}
+            style={{ cursor: "pointer" }}
+          >
             <FontAwesomeIcon icon={faCirclePause} className="icon-play" />
           </div>
         ) : (
-          <div className="icon-play" onClick={handlePlayClick}>
+          <div
+            className="icon-play"
+            onClick={handlePlayClick}
+            style={{ cursor: "pointer" }}
+          >
             <FontAwesomeIcon icon={faCirclePlay} className="icon-play" />
           </div>
         )}
@@ -272,9 +314,31 @@ const TrackPage = () => {
             gap: "0.3rem",
           }}
         >
-          <FontAwesomeIcon icon={faCirclePlus} className="icon-add" /> Add to
-          playlist
+          <div onClick={() => setShowDropdown(!showDropdown)}>
+            <FontAwesomeIcon icon={faCirclePlus} className="icon-add" />
+          </div>
+          Add to playlist
         </h5>
+        {showDropdown && (
+          <div className="selectplay-container">
+            <select onChange={(e) => handleAddToPlaylist(e.target.value)}>
+              <option value="" hidden>
+                Select Playlist
+              </option>
+              {playlist && playlist.length > 0 ? (
+                playlist.map((item, index) => (
+                  <option key={index} value={index}>
+                    {item.playlisttitle}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No playlists available
+                </option>
+              )}
+            </select>
+          </div>
+        )}
       </div>
 
       <h5
@@ -298,7 +362,7 @@ const TrackPage = () => {
             onClick={() => {
               if (track.trackid && track.albumid) {
                 navigate(
-                  `/trackpage/${track.trackid.toString()}/${track.albumid.toString()}`,
+                  `/trackpage/${track.trackid.toString()}/${track.albumid.toString()}`
                 );
               }
             }}

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import type { User } from "../../model/User";
 // import { googleapi } from "../api-calls/auth/googleapi";
 import { signup } from "../api-calls/auth/signup";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 
 const Register = () => {
   interface Country {
@@ -29,7 +30,11 @@ const Register = () => {
   const [country, setCountry] = useState("");
   const [countries, setCountries] = useState<Country[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const { user, loading } = useAuthWithLoad();
+  useEffect(() => {
+    if (loading) return;
+    if (user) navigate("/home");
+  }, [loading, user, navigate]);
   interface ApiCountry {
     name: {
       common: string;

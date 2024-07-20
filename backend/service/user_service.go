@@ -10,9 +10,9 @@ type UserService interface {
 	FindAll() []response.UserResponse
 	FindByEmail(email string) (response.UserResponse, error)
 	ActivateUserEmail(email string) error
-	ResetUserPassword(user *response.UserResponse) error
 	EditProfileUser(user *response.UserResponse) error
 	UpdateUser(user *response.UserResponse) error
 	GetUserToVerify() (response.UserVerificationResponse, error)
 	GetUserByArtistId(artistId uint) response.UserResponse
+	GetFFM(userId uint) response.FFMResponse
 }

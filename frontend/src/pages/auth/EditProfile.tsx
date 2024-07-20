@@ -7,11 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
-import type { User } from "../../model/User";
 import { editprofile } from "../api-calls/auth/editprofile";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 const EditProfile = () => {
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
@@ -20,15 +19,15 @@ const EditProfile = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   useEffect(() => {
-    if (user?.email === "") {
-      navigate("/login");
-    } else if (user?.email) {
+    if (loading) return;
+    if (!user) navigate("/login");
+    else if (user?.email) {
       setGender(capitalize(user.gender));
       setEmail(user.email);
       setUserDob(formatDate(new Date(user.dob)));
       setCountry(user.country);
     }
-  }, [navigate, user]);
+  }, [navigate, user, loading]);
 
   const capitalize = (str: string) => {
     return str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -36,8 +35,8 @@ const EditProfile = () => {
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
-    const month = `0${date.getMonth() + 1}`.slice(-2); // Add leading zero
-    const day = `0${date.getDate()}`.slice(-2); // Add leading zero
+    const month = `0${date.getMonth() + 1}`.slice(-2); 
+    const day = `0${date.getDate()}`.slice(-2); 
     return `${year}-${month}-${day}`;
   };
 
@@ -54,7 +53,8 @@ const EditProfile = () => {
       const dobDate = new Date(Number(year), Number(month) - 1, Number(date));
 
       await editprofile(email, gender, dobDate, country);
-      window.location.reload();
+      setErrorMessage("Success");
+      setIsSuccess(true);
     };
     void handleSubmitForm();
   };

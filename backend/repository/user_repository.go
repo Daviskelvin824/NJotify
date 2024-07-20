@@ -1,6 +1,9 @@
 package repository
 
-import "github.com/Daviskelvin824/TPA-Website/model"
+import (
+	"github.com/Daviskelvin824/TPA-Website/data/response"
+	"github.com/Daviskelvin824/TPA-Website/model"
+)
 
 type UserRepository interface {
 	Save(user model.User)
@@ -10,4 +13,5 @@ type UserRepository interface {
 	UpdateUser(user model.User) error
 	GetUserToVerify() (UserVerificationInfo, error)
 	FindByArtistId(artistId uint) model.User
+	GetFFM(userId uint) response.FFMResponse
 }

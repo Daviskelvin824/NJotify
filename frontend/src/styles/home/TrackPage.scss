@@ -51,6 +51,19 @@
         align-items: center;
         gap: 2rem;
         margin-top: 3vh;
+
+        .selectplay-container{
+            select{
+                background-color: black;
+                color: white;
+                border-radius: 3px;
+                padding: 0.2vw;
+                width: 10vw;
+                border: 1px solid grey;
+                height: 4vh;
+            }
+        }
+
         .icon-play{
             padding-left: 0.5vw;
             width: 40px;

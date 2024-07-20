@@ -191,3 +191,35 @@ func (controller *AlbumController) GetPopularTrackByArtist(ctx *gin.Context) {
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
+
+func (controller *AlbumController) AddTrackHistory(ctx *gin.Context){
+	historyReq := request.AddTrackHistoryRequest{}
+	err := ctx.ShouldBindJSON(&historyReq)
+	helper.CheckPanic(err)
+	historyReq.CreatedAt = time.Now()
+	controller.albumService.AddTrackHistory(historyReq)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   nil,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+
+}
+
+func (controller *AlbumController) AddAlbumHistory(ctx *gin.Context){
+	historyReq := request.AlbumHistoryRequest{}
+	err := ctx.ShouldBindJSON(&historyReq)
+	helper.CheckPanic(err)
+	historyReq.CreatedAt = time.Now()
+	controller.albumService.AddAlbumHistory(historyReq)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   nil,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+
+}

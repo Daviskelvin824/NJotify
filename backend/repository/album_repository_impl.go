@@ -57,7 +57,6 @@ func (c *AlbumRepositoryImpl) GetTrackByTrackId(trackId int) model.Track {
 func (c *AlbumRepositoryImpl) GetPopularTrackByArtist(artistId int) []response.PopularTrackResponse {
 	var popularTracks []response.PopularTrackResponse
 
-	// Query to count the number of listens for each track by the artist, including tracks with zero listens
 	c.Db.Table("tracks").
 		Select("tracks.album_id, tracks.track_id, albums.image_path, tracks.track_titles,tracks.file_paths ,COALESCE(COUNT(track_histories.track_id), 0) as listening_count").
 		Joins("JOIN albums ON albums.album_id = tracks.album_id").
@@ -68,4 +67,14 @@ func (c *AlbumRepositoryImpl) GetPopularTrackByArtist(artistId int) []response.P
 		Scan(&popularTracks)
 
 	return popularTracks
+}
+
+func(c *AlbumRepositoryImpl) AddTrackHistory(history model.TrackHistory){
+	result := c.Db.Create(&history)
+	helper.CheckPanic(result.Error)
+}
+
+func(c *AlbumRepositoryImpl) AddAlbumHistory(history model.AlbumHistory){
+	result := c.Db.Create(&history)
+	helper.CheckPanic(result.Error)
 }

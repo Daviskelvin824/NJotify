@@ -1,6 +1,11 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, ReactNode, useEffect, useRef, useState } from "react";
+import { SingleTrack } from "../model/SingleTrack";
+import { User } from "../model/User";
+import { Track } from "../model/Track";
+import { Album } from "../model/Album";
+import useAuth from "../hooks/useAuth";
+import { addtrackhistory } from "../pages/api-calls/home/addtrackhistory";
+import { addalbumhistory } from "../pages/api-calls/home/addalbumhistory";
 
 interface PlayerContextType {
   audioRef: React.RefObject<HTMLAudioElement>;
@@ -8,10 +13,14 @@ interface PlayerContextType {
   seekVolumeBar: React.RefObject<HTMLHRElement>;
   seekBg: React.RefObject<HTMLDivElement>;
   seekVolume: React.RefObject<HTMLDivElement>;
-  track: string;
-  setTrack: React.Dispatch<React.SetStateAction<string>>;
+  queue: TrackContext[];
+  setQueue: React.Dispatch<React.SetStateAction<TrackContext[]>>;
   playStatus: boolean;
   setPlayStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  showQueueBar: boolean;
+  setShowQueueBar: React.Dispatch<React.SetStateAction<boolean>>;
+  showSongDetailbar: boolean;
+  setShowSongDetailbar: React.Dispatch<React.SetStateAction<boolean>>;
   volume: number;
   time: {
     currentTime: {
@@ -37,15 +46,9 @@ interface PlayerContextType {
   >;
   play: () => void;
   pause: () => void;
+  next: () => void;
   seekSong: (e: React.MouseEvent<HTMLHRElement>) => void;
   increaseVol: (e: { nativeEvent: { offsetX: number } }) => void;
-  playWithId: (track: string) => void;
-  albumname: string;
-  setalbumname: React.Dispatch<React.SetStateAction<string>>;
-  artistname: string;
-  setartistname: React.Dispatch<React.SetStateAction<string>>;
-  albumimage: string;
-  setalbumimage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface PlayerContextProviderProps {
@@ -58,20 +61,27 @@ export const PlayerContext = createContext<PlayerContextType>({
   seekVolumeBar: { current: null },
   seekBg: { current: null },
   seekVolume: { current: null },
-  track: "",
-  setTrack: () => {
+  queue: [],
+  setQueue: () => {
     null;
   },
   playStatus: false,
   setPlayStatus: () => {
     null;
   },
+  showQueueBar: false,
+  setShowQueueBar: () => null,
+  showSongDetailbar: false,
+  setShowSongDetailbar: () => null,
   volume: 1,
   time: {
     currentTime: { second: "00", minute: "00" },
     totalTime: { second: "00", minute: "00" },
   },
   setTime: () => {
+    null;
+  },
+  next: () => {
     null;
   },
   play: () => {
@@ -86,22 +96,13 @@ export const PlayerContext = createContext<PlayerContextType>({
   increaseVol: () => {
     null;
   },
-  playWithId: () => {
-    null;
-  },
-  albumname: "",
-  setalbumname: () => {
-    null;
-  },
-  artistname: "",
-  setartistname: () => {
-    null;
-  },
-  albumimage: "",
-  setalbumimage: () => {
-    null;
-  },
 });
+
+export type TrackContext = {
+  track: SingleTrack;
+  album: Album;
+  artist: User;
+};
 
 const PlayerContextProvider = (props: PlayerContextProviderProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -109,15 +110,19 @@ const PlayerContextProvider = (props: PlayerContextProviderProps) => {
   const seekVolumeBar = useRef<HTMLHRElement>(null);
   const seekBg = useRef<HTMLDivElement>(null);
   const seekVolume = useRef<HTMLDivElement>(null);
-  const [track, setTrack] = useState("");
+  const [queue, setQueue] = useState<TrackContext[]>([]);
   const [playStatus, setPlayStatus] = useState(false);
   const [volume, setVolume] = useState(1);
-  const [albumname, setalbumname] = useState("");
-  const [artistname, setartistname] = useState("");
-  const [albumimage, setalbumimage] = useState("");
+  const [isQueueReady, setIsQueueReady] = useState(false);
+  const [isTrackInHistory, setIsTrackInHistory] = useState(false);
+  const [isAlbumInHistory, setIsAlbumInHistory] = useState(false);
+  const [showQueueBar, setShowQueueBar] = useState(false);
+  const [showSongDetailbar, setShowSongDetailbar] = useState(false);
+  const user: User | null = useAuth();
   const padTime = (time: number) => {
     return time.toString().padStart(2, "0");
   };
+
   const [time, setTime] = useState({
     currentTime: {
       second: padTime(0),
@@ -129,10 +134,33 @@ const PlayerContextProvider = (props: PlayerContextProviderProps) => {
     },
   });
 
+  const addTracktoHistory = async (trackId: number) => {
+    if (user?.userid) {
+      await addtrackhistory(user?.userid, trackId);
+      console.log("Track added to history:", trackId);
+    }
+  };
+
+  const addAlbumToHistory = async (albumId: number) => {
+    if (user?.userid) {
+      await addalbumhistory(user?.userid, albumId);
+      console.log("Album added to history:", albumId);
+    }
+  };
+
   const play = () => {
     if (audioRef.current) {
       void audioRef.current.play();
       setPlayStatus(true);
+      if (!isTrackInHistory && queue[0].track.trackid) {
+        addTracktoHistory(queue[0].track.trackid);
+        setIsTrackInHistory(true);
+      }
+
+      if (!isAlbumInHistory && queue[0].album.albumid) {
+        addAlbumToHistory(queue[0].album.albumid);
+        setIsAlbumInHistory(true);
+      }
     }
   };
 
@@ -143,46 +171,73 @@ const PlayerContextProvider = (props: PlayerContextProviderProps) => {
     }
   };
 
-  const playWithId = async (track: string) => {
-    const cleanedPath = track.replace(/"/g, "");
-    // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-confusing-void-expression
-    await setTrack(cleanedPath);
-    await audioRef.current?.play();
-    setPlayStatus(true);
+  const seekSong = (e: React.MouseEvent<HTMLHRElement>) => {
+    if (audioRef.current && seekBg.current) {
+      audioRef.current.currentTime =
+        (e.nativeEvent.offsetX / seekBg.current.offsetWidth) *
+        audioRef.current?.duration;
+    }
   };
 
-  const seekSong = (e: React.MouseEvent<HTMLHRElement>) => {
-    audioRef.current.currentTime =
-      (e.nativeEvent.offsetX / seekBg.current.offsetWidth) *
-      audioRef.current?.duration;
+  const next = async () => {
+    if (queue.length > 1) {
+      await setQueue([...queue.slice(1)]);
+      setIsQueueReady(true);
+      setIsTrackInHistory(false);
+      setIsAlbumInHistory(false);
+    } else {
+      setQueue([]);
+      setPlayStatus(false);
+      setIsTrackInHistory(false);
+      setIsAlbumInHistory(false);
+    }
   };
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.ontimeupdate = () => {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        seekBar.current.style.width = `${(audioRef.current?.currentTime / audioRef.current?.duration) * 100}%`;
-
-        setTime((prevTime) => ({
-          ...prevTime,
-          currentTime: {
-            second: padTime(Math.floor(audioRef.current.currentTime % 60)),
-            minute: padTime(Math.floor(audioRef.current.currentTime / 60)),
-          },
-        }));
-      };
-
-      audioRef.current.onloadedmetadata = () => {
-        setTime((prevTime) => ({
-          ...prevTime,
-          totalTime: {
-            second: padTime(Math.floor(audioRef.current.duration % 60)),
-            minute: padTime(Math.floor(audioRef.current.duration / 60)),
-          },
-        }));
-      };
+    if (isQueueReady) {
+      play();
+      setIsQueueReady(false);
     }
-  }, [audioRef]);
+  }, [isQueueReady, play]);
+
+  useEffect(() => {
+    if (!audioRef.current || !seekBar.current) {
+      return;
+    }
+    const audio = audioRef.current;
+    const bar = seekBar.current;
+    audio.ontimeupdate = () => {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      bar.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+
+      if (queue.length === 0) {
+        pause();
+      }
+
+      setTime((prevTime) => ({
+        ...prevTime,
+        currentTime: {
+          second: padTime(Math.floor(audio.currentTime % 60)),
+          minute: padTime(Math.floor(audio.currentTime / 60)),
+        },
+      }));
+    };
+
+    audio.onloadedmetadata = () => {
+      setTime((prevTime) => ({
+        ...prevTime,
+        totalTime: {
+          second: padTime(Math.floor(audio.duration % 60)),
+          minute: padTime(Math.floor(audio.duration / 60)),
+        },
+      }));
+    };
+    audio.onended = () => {
+      if (queue.length > 0) {
+        next();
+      }
+    };
+  }, [audioRef, next]);
 
   const increaseVol = (e: { nativeEvent: { offsetX: number } }) => {
     if (audioRef.current && seekVolume.current) {
@@ -208,30 +263,32 @@ const PlayerContextProvider = (props: PlayerContextProviderProps) => {
     seekBg,
     seekVolume,
     seekVolumeBar,
-    track,
-    setTrack,
+    queue,
+    setQueue,
     playStatus,
     setPlayStatus,
     time,
     setTime,
     volume,
     play,
+    showQueueBar,
+    setShowQueueBar,
+    showSongDetailbar,
+    setShowSongDetailbar,
     pause,
     seekSong,
     increaseVol,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    playWithId,
-    albumimage,
-    setalbumimage,
-    albumname,
-    setalbumname,
-    artistname,
-    setartistname,
+    next,
   };
-
+  console.log(queue);
   return (
     <PlayerContext.Provider value={contextValue}>
       {props.children}
+      <audio
+        ref={audioRef}
+        src={"http://localhost:8888/files/" + queue[0]?.track.filepaths ?? ""}
+        preload="auto"
+      ></audio>
     </PlayerContext.Provider>
   );
 };

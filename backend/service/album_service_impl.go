@@ -125,3 +125,26 @@ func (c *AlbumServiceImpl) GetPopularTrackByArtist(artistId int) []response.Popu
 	response := c.AlbumRepository.GetPopularTrackByArtist(artistId)
 	return response
 }
+
+func(c *AlbumServiceImpl) AddTrackHistory(history request.AddTrackHistoryRequest){
+	err := c.Validate.Struct(history)
+	helper.CheckPanic(err)
+
+	historyModel := model.TrackHistory{
+		TrackID: history.TrackID,
+		UserID: history.UserID,
+		CreatedAt: history.CreatedAt,
+	}
+	c.AlbumRepository.AddTrackHistory(historyModel)
+}	
+func(c *AlbumServiceImpl) AddAlbumHistory(history request.AlbumHistoryRequest){
+	err := c.Validate.Struct(history)
+	helper.CheckPanic(err)
+
+	historyModel := model.AlbumHistory{
+		AlbumID: history.AlbumID,
+		UserID: history.UserID,
+		CreatedAt: history.CreatedAt,
+	}
+	c.AlbumRepository.AddAlbumHistory(historyModel)
+}	

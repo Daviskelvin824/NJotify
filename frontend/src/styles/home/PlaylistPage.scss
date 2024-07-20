@@ -1,0 +1,186 @@
+.playlists-container{
+    width: 100%;
+    height: auto;
+    background: rgb(0,0,0);
+    background: linear-gradient(360deg, rgba(0,0,0,1) 63%, rgba(154,125,50,1) 95%);
+    padding-bottom: 13vh;
+    .header-container{
+        padding-left: 1.2vw;
+        display: flex;
+        align-items: last baseline;
+        gap: 1.5rem;
+        width: 100%;
+        margin-top: 1vw;
+        height: 27vh;
+        img{
+            width: 27vh;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .text-container{
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            
+            .txt-container{
+                display: flex;
+                gap: 10px;
+                justify-content: flex-start;
+                align-items: center;
+                h1{
+                    font-size: 0.8rem;
+                    color: black;
+                    font-weight: bold;
+                }
+            }
+
+            .img-con{
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background-color: rgb(30,215,96);
+                align-items: center;
+                display: flex;
+                justify-content: center;
+
+            }
+        }
+
+    }
+
+    .head2-container{
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        margin-top: 2vh;
+        .follow-container{
+            border: 1px solid grey;
+            border-radius: 30px;
+            margin-right: 1vw;
+            width:5vw;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            height: 3vh;
+            cursor: pointer;
+            background-color: transparent;
+            h5{
+                font-weight: normal;
+            }
+            transition: background-color 0.3s ease;
+            &:hover {
+                background-color: rgb(59, 53, 53); 
+            }
+        }
+        .icon-play{
+            padding-left: 0.5vw;
+            width: 40px;
+            height: 40px;
+            color: rgb(30,215,96);
+            padding-bottom: 3vw;
+            margin-right: 2vw;
+        }
+
+        .ellipsis{
+            color: #a7a7a7;
+            font-size: x-large;
+            font-weight: lighter;
+            cursor: pointer;
+            display: flex;
+            margin-right: 0.5vw;
+            &:hover{
+                color: white;
+            }
+            
+        }
+        .delete-menu {
+            gap:5px;
+            background-color: #222222; 
+            color: white;
+            width: 10vw;
+            height: 4vh;
+            align-items: center;
+            display: flex;
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 10;
+            font-size: medium;
+            padding-left: 0.5vw;
+            
+            
+            h5{
+                font-weight: normal;
+            }
+
+            &:hover{
+                background-color: #3b3b3b;
+            }
+          }
+    }
+
+
+    .body-container{
+        margin-left: 1.8vw;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); 
+        @media (min-width: 640px) {
+            grid-template-columns: repeat(4, 1fr); 
+        }
+        margin-top: 2.5rem; 
+        margin-bottom: 1rem; 
+        padding-left: 0.5rem;
+        color: #a7a7a7; 
+        gap: 15vw;
+
+    }
+    
+    .track-containers{
+        margin-left: 1.2vw;
+        
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin-top: 0.7vw;
+        padding-left: 0.5rem; 
+        color: #a7a7a7; 
+        width: 94.5%;
+        
+
+        img{
+            width: 30px;
+            height: 30px;
+            margin-left: 0.5vw;
+        }
+        .txt2{
+            width: 17vw;
+            gap: 10rem;
+            margin-left: 1vw;
+        }
+        .txts{
+            display: flex;
+            align-items: center;
+            padding: 0.5vw;
+            b{
+                font-weight: lighter;
+            }
+            cursor: pointer;
+            &:hover{
+                background-color: rgb(66, 66, 66);
+                border-radius: 3px;
+                
+            }
+        }
+
+        .delete-container{
+            display: flex;
+            align-items: center;
+            margin-left: 0.5vw;
+            cursor: pointer;
+            &:hover{
+                color: white;  
+            }
+        }
+
+    }
+    
+}

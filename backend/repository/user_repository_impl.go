@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 
+	"github.com/Daviskelvin824/TPA-Website/data/response"
 	"github.com/Daviskelvin824/TPA-Website/helper"
 	"github.com/Daviskelvin824/TPA-Website/model"
 	"gorm.io/gorm"
@@ -100,4 +101,77 @@ func (repo *UserRepositoryImpl) FindByArtistId(artistId uint) model.User {
 	result := repo.Db.Where("user_id = ?", artistId).Find(&users)
 	helper.CheckPanic(result.Error)
 	return users
+}
+
+func (repo *UserRepositoryImpl) GetFFM(userId uint) response.FFMResponse{
+	var followingUser []model.User
+	var followerUser []model.User
+	var mutualFollowing []model.User
+
+	err := repo.Db.Table("users").Select("users.*").
+        Joins("INNER JOIN follows ON follows.following_id = users.user_id").
+        Where("follows.follower_id = ?", userId).
+        Scan(&followingUser).Error
+
+    helper.CheckPanic(err)
+
+	err = repo.Db.Table("users").Select("users.*").
+        Joins("INNER JOIN follows ON follows.follower_id = users.user_id").
+        Where("follows.following_id = ?", userId).
+        Scan(&followerUser).Error
+
+	helper.CheckPanic(err)
+
+
+	followingMap := make(map[uint]bool)
+    for _, user := range followingUser {
+        followingMap[user.UserId] = true
+    }
+
+    for _, user := range followerUser {
+        if _, exists := followingMap[user.UserId]; exists {
+            mutualFollowing = append(mutualFollowing, user)
+        }
+    }
+
+	toUserResponse := func(user model.User) response.UserResponse {
+		return response.UserResponse{
+			UserId:           user.UserId,
+			Email:            user.Email,
+			Username:         user.Username,
+			Password:         user.Password,
+			Gender:           user.Gender,
+			DOB:              user.DOB,
+			Country:          user.Country,
+			ProfilePageImage: user.ProfilePageImage,
+			IsVerified:       user.IsVerified,
+			IsArtist:         user.IsArtist,
+			BannerImage:      user.BannerImage,
+			AboutMe:          user.AboutMe,
+		}
+	}
+
+	followingUserResponses := make([]response.UserResponse, len(followingUser))
+	for i, user := range followingUser {
+		followingUserResponses[i] = toUserResponse(user)
+	}
+
+	followerUserResponses := make([]response.UserResponse, len(followerUser))
+	for i, user := range followerUser {
+		followerUserResponses[i] = toUserResponse(user)
+	}
+
+	mutualFollowingResponses := make([]response.UserResponse, len(mutualFollowing))
+	for i, user := range mutualFollowing {
+		mutualFollowingResponses[i] = toUserResponse(user)
+	}
+
+	ffmRes := response.FFMResponse{
+		FollowingUser: followingUserResponses,
+		FollowerUser:  followerUserResponses,
+		MutualFollowingUser: mutualFollowingResponses,
+	}
+
+	return ffmRes
+	
 }

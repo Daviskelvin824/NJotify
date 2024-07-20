@@ -68,6 +68,13 @@
         &:hover {
           background-color: rgba(31, 28, 28, 0.5); /* Light grey background on hover */
         }
+
+        .img-review{
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
       }
     }
     

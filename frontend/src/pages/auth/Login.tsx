@@ -3,17 +3,23 @@ import "../../styles/auth/Login.scss";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons/faGoogle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // import { googleapi } from "../api-calls/auth/googleapi";
 import { signin } from "../api-calls/auth/signin";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { user, loading } = useAuthWithLoad();
+  useEffect(() => {
+    if (loading) return;
+    if (user) navigate("/home");
+  }, [loading, user, navigate]);
   const getSignInWithGoogleButton = () => {
     return (
       <div className={"sign_in_with_google_and_apple_button"}>

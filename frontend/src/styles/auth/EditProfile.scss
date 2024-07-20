@@ -129,9 +129,7 @@
             .error-message {
                 color: red;
                 font-size: 0.9em;
-                position: absolute;
-                bottom: 27vh;
-                right: 28.3vw;
+                text-align: right;
             }
             
             .btn-container{
@@ -139,7 +137,7 @@
                 display: flex;
                 justify-content: flex-end;
                 align-items: center;
-                padding-top: 5vh;
+                padding-top: 2vh;
                 gap: 3vw;
                 button{
                     width: 20%;

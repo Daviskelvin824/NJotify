@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 
 import verifyLogo from "../../assets/verified.png";
 import TopBar from "../../components/home/TopBar";
-import useAuth from "../../hooks/useAuth";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 import type { Album } from "../../model/Album";
 import type { User } from "../../model/User";
 import { getalbumbyartist } from "../api-calls/home/getalbumbyartist";
 const YourPost = () => {
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   const navigate = useNavigate();
   const [albums, setalbums] = useState<Album[]>([]);
 
@@ -24,11 +24,10 @@ const YourPost = () => {
   };
 
   useEffect(() => {
-    if (user?.email === "") {
-      navigate("/login");
-    }
+    if (loading) return;
+    if (!user) navigate("/login");
     void getAlbum();
-  }, [user]);
+  }, [user, loading]);
 
   if (user?.isartist === false) {
     navigate("/home");
@@ -63,28 +62,32 @@ const YourPost = () => {
           >
             <span>+</span>
           </div>
-          {albums.map((album, index) => (
-            <div
-              className="album-grid-item"
-              key={index}
-              onClick={() => {
-                if (album.albumid) {
-                  navigate(`/albumpage/${album.albumid.toString()}`);
-                }
-              }}
-            >
-              <img
-                src={"http://localhost:8888/files/" + album.imagepath}
-                alt={album.albumname}
-              />
-              <div className="album-info">
-                <h3>{album.albumname}</h3>
-                <p>
-                  {new Date(album.createdat).getFullYear()}. {album.albumtype}
-                </p>
+          {albums && albums.length > 0 ? (
+            albums.map((album, index) => (
+              <div
+                className="album-grid-item"
+                key={index}
+                onClick={() => {
+                  if (album.albumid) {
+                    navigate(`/albumpage/${album.albumid.toString()}`);
+                  }
+                }}
+              >
+                <img
+                  src={"http://localhost:8888/files/" + album.imagepath}
+                  alt={album.albumname}
+                />
+                <div className="album-info">
+                  <h3>{album.albumname}</h3>
+                  <p>
+                    {new Date(album.createdat).getFullYear()}. {album.albumtype}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>

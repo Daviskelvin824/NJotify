@@ -15,4 +15,6 @@ func AlbumRoute(router *gin.Engine, albumController *controller.AlbumController)
 	router.POST("/gettracksbyalbum", albumController.GetTrackByAlbum)
 	router.POST("/gettracksbytrackid", albumController.GetTrackByTrackId)
 	router.POST("/getpopulartrackbyartist", albumController.GetPopularTrackByArtist)
+	router.POST("/addtrackhistory",albumController.AddTrackHistory)
+	router.POST("/addalbumhistory",albumController.AddAlbumHistory)
 }

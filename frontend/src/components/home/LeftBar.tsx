@@ -10,14 +10,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import useAuth from "../../hooks/useAuth";
 import type { User } from "../../model/User";
+import PlaylistPopup from "../ui/PlaylistPopup";
+import { getuserplaylist } from "../../pages/api-calls/home/getUserPlaylist";
+import { Playlist } from "../../model/Playlist";
 
 const LeftBar = () => {
   const [isArtist, setIsArtist] = useState<boolean | undefined>(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showPopup, setShowPopup] = useState(false);
+  const [playlist, setPlaylist] = useState<Playlist[]>([]);
+  const [previousLocation, setPreviousLocation] = useState<string | null>(null);
   const user: User | null = useAuth();
   useEffect(() => {
     if (user?.email === "") {
@@ -26,6 +33,28 @@ const LeftBar = () => {
     console.log(user);
     setIsArtist(user?.isartist);
   }, [navigate, user]);
+
+  const handleAddPlaylist = (playlistName: string) => {
+    console.log("New playlist added:", playlistName);
+  };
+
+  const fetchUserPlaylist = async () => {
+    if (user?.userid) {
+      const response = await getuserplaylist(user?.userid);
+      setPlaylist(response);
+    }
+  };
+  useEffect(() => {
+    if (location.pathname.startsWith("/home")) {
+      void fetchUserPlaylist();
+    }
+    // Update previous location
+    setPreviousLocation(location.pathname);
+  }, [location, previousLocation]);
+
+  useEffect(() => {
+    void fetchUserPlaylist();
+  }, [user, showPopup]);
 
   return (
     <div className={"main-container"}>
@@ -38,7 +67,7 @@ const LeftBar = () => {
         >
           <FontAwesomeIcon icon={faHome} /> <h3>Home</h3>
         </button>
-        <button className={"home-btn"}>
+        <button className={"home-btn"} onClick={() => navigate("/searchpage")}>
           <FontAwesomeIcon icon={faSearch} /> <h3>Search</h3>
         </button>
         {isArtist && (
@@ -61,11 +90,48 @@ const LeftBar = () => {
           </div>
 
           <div className="rightlib">
-            <FontAwesomeIcon icon={faPlus} className="icon" />
+            <FontAwesomeIcon
+              icon={faPlus}
+              className="icon"
+              onClick={() => setShowPopup(true)}
+            />
             <FontAwesomeIcon icon={faArrowRight} className="icon" />
           </div>
         </div>
+
+        <div className="playlist-container">
+          {playlist && playlist.length > 0 ? (
+            playlist.map((item, index) => (
+              <div
+                key={index}
+                className="item-container"
+                onClick={() => navigate(`/playlistpage/${item.playlistid}`)}
+              >
+                <img
+                  src={`http://localhost:8888/files/${item.playlistimg ?? ""}`}
+                  alt=""
+                />
+                <div className="txt-container">
+                  <h5 style={{ fontWeight: "500", fontSize: "0.8em" }}>
+                    {item.playlisttitle}
+                  </h5>
+                  <p style={{ fontWeight: "lighter", fontSize: "small" }}>
+                    Playlist . {user?.username}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
+      {showPopup && (
+        <PlaylistPopup
+          onClose={() => setShowPopup(false)}
+          onAdd={handleAddPlaylist}
+        />
+      )}
     </div>
   );
 };

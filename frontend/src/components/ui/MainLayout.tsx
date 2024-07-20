@@ -11,9 +11,12 @@ import Footer from "./Footer";
 import ManageAccNavbar from "./ManageAccNavbar";
 import ManageFooter from "./ManageFooter";
 import Navbar from "./Navbar";
+import QueueBar from "./QueueBar";
+import SongDetailBar from "./SongDetailBar";
 
 const MainLayout = () => {
   const location = useLocation();
+  const { showQueueBar, showSongDetailbar } = useContext(PlayerContext);
   const showNavbarRoutes = [
     "/register",
     "/login",
@@ -70,8 +73,6 @@ const MainLayout = () => {
   ];
   const showBottomBar = !hideBottomBar.includes(location.pathname);
 
-  const { audioRef, track } = useContext(PlayerContext);
-
   return (
     <div className={showNav ? "" : "display-container"}>
       {showNav && <Navbar />}
@@ -84,12 +85,9 @@ const MainLayout = () => {
         {showManageFoot && <ManageFooter />}
       </div>
       {showBottomBar && <BottomBar />}
-      <audio
-        ref={audioRef}
-        src={"http://localhost:8888/files/" + track}
-        preload="auto"
-      ></audio>
-      {/* {showLeft && <LeftBar/>} */}
+
+      {showQueueBar && <QueueBar />}
+      {showSongDetailbar && <SongDetailBar />}
       {showFoot && <Footer />}
     </div>
   );

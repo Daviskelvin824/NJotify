@@ -5,12 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
-import type { User } from "../../model/User";
 import { getverified } from "../api-calls/auth/getverified";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 const GetVerified = () => {
   const navigate = useNavigate();
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   const [userRole, setUserRole] = useState<boolean>(false);
   const [userBanner, setUserBanner] = useState<string>("");
   const [AboutMe, setAboutMe] = useState("");
@@ -22,17 +21,17 @@ const GetVerified = () => {
   };
 
   useEffect(() => {
-    if (user?.email === "") {
-      navigate("/login");
-    }
+    if (loading) return;
+    if (!user) navigate("/login");
     console.log(user);
-    if (user?.isartist) {
+    if (user) {
       setUserRole(user.isartist);
+      console.log("user is artist = ", user.isartist);
+      if (user?.bannerimage) {
+        setUserBanner(user.bannerimage);
+      }
     }
-    if (user?.bannerimage) {
-      setUserBanner(user.bannerimage);
-    }
-  }, [navigate, user, refreshData]);
+  }, [navigate, user, refreshData, loading]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -48,6 +47,7 @@ const GetVerified = () => {
       if (user?.email && bannerImagePath) {
         await getverified(user.email, bannerImagePath, AboutMe);
         setRefreshData(!refreshData);
+        window.location.reload();
       }
     };
     void handleSubmitForm();
@@ -81,7 +81,7 @@ const GetVerified = () => {
           </label>
           <div className="input-container">
             <label htmlFor="">Current Role</label>
-            <h5>{userRole ? "Artist" : "Listener"}</h5>
+            <h5>{user?.isartist ? "Artist" : "Listener"}</h5>
             <h5>About You</h5>
             <textarea
               rows={4}

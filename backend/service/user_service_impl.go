@@ -34,6 +34,8 @@ func (c *UserServiceImpl) Create(users request.CreateUserRequest) {
 		DOB:      users.DOB,
 		Gender:   users.Gender,
 		Country:  users.Country,
+		IsVerified: false,
+		IsArtist: false,
 	}
 	c.UserRepository.Save(userModel)
 }
@@ -52,6 +54,7 @@ func (c *UserServiceImpl) FindAll() []response.UserResponse {
 			Country:          value.Country,
 			ProfilePageImage: value.ProfilePageImage,
 			IsVerified:       value.IsVerified,
+			IsArtist: value.IsArtist,
 			BannerImage:      value.BannerImage,
 			AboutMe:          value.AboutMe,
 		}
@@ -79,6 +82,7 @@ func (c *UserServiceImpl) FindByEmail(email string) (response.UserResponse, erro
 		Country:          result.Country,
 		ProfilePageImage: result.ProfilePageImage,
 		IsVerified:       result.IsVerified,
+		IsArtist: 		  result.IsArtist,
 		BannerImage:      result.BannerImage,
 		AboutMe:          result.AboutMe,
 	}
@@ -88,25 +92,6 @@ func (c *UserServiceImpl) FindByEmail(email string) (response.UserResponse, erro
 
 func (c *UserServiceImpl) ActivateUserEmail(email string) error {
 	err := c.UserRepository.ActivateUserEmail(email)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c *UserServiceImpl) ResetUserPassword(user *response.UserResponse) error {
-
-	userModel := model.User{
-		UserId:   user.UserId,
-		Email:    user.Email,
-		Username: user.Username,
-		Password: user.Password,
-		DOB:      user.DOB,
-		Gender:   user.Gender,
-		Country:  user.Country,
-	}
-
-	err := c.UserRepository.UpdateUser(userModel)
 	if err != nil {
 		return err
 	}
@@ -147,6 +132,11 @@ func (c *UserServiceImpl) EditProfileUser(user *response.UserResponse) error {
 		DOB:      user.DOB,
 		Gender:   user.Gender,
 		Country:  user.Country,
+		ProfilePageImage: user.ProfilePageImage,
+		IsVerified: user.IsVerified,
+		IsArtist: user.IsArtist,
+		BannerImage: user.BannerImage,
+		AboutMe: user.AboutMe,
 	}
 
 	err := c.UserRepository.UpdateUser(userModel)
@@ -189,4 +179,9 @@ func (s *UserServiceImpl) GetUserByArtistId(artistId uint) response.UserResponse
 		AboutMe:          user.AboutMe,
 	}
 	return userResponse
+}
+
+func (c *UserServiceImpl) GetFFM(userId uint) response.FFMResponse{
+	result := c.UserRepository.GetFFM(userId)
+	return result
 }

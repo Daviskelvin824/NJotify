@@ -2,8 +2,8 @@ import axios from "axios";
 
 export const handleacceptartists = async (
   email: string,
-  image: string,
-  about: string,
+  image: string | undefined,
+  about: string | undefined,
 ) => {
   try {
     const response = await axios.post(

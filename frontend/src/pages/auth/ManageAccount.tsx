@@ -5,22 +5,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import useAuth from "../../hooks/useAuth";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
 import type { User } from "../../model/User";
 import { logout } from "../api-calls/auth/logout";
 
 const ManageAccount = () => {
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   const navigate = useNavigate();
   useEffect(() => {
-    if (user?.email === "") {
-      navigate("/login");
-    }
-  });
-
-  const handleChangePass = () => {
-    navigate("/find-account");
-  };
+    if (loading) return;
+    if (!user) navigate("/login");
+  }, [loading, user, navigate]);
 
   const handleEditProfile = () => {
     navigate("/edit-profile");
@@ -63,7 +58,7 @@ const ManageAccount = () => {
         <br />
         <div className="security-container">
           <h3>Privacy and Security</h3>
-          <div className="btn-container" onClick={handleChangePass}>
+          <div className="btn-container">
             <h4>Change Password</h4>
             <FontAwesomeIcon icon={faArrowRight} className="icon" />
           </div>

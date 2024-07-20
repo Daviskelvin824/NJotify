@@ -27,4 +27,7 @@ func UserRoute(router *gin.Engine, userController *controller.UserController) {
 	router.POST("/handlereject", userController.HandleReject)
 	router.POST("/handleaccept", userController.HandleAccept)
 	router.POST("/getartist", userController.GetArtist)
+	router.POST("/addprofileimage",userController.AddProfileImage)
+	router.POST("/getuserbyemail",userController.GetUserByEmail)
+	router.POST("/getFFM", userController.GetFFM)
 }

@@ -4,21 +4,28 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import TopBar from "../../components/home/TopBar";
-import useAuth from "../../hooks/useAuth";
-import type { User } from "../../model/User";
+import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
+
 const Home = () => {
-  const user: User | null = useAuth();
+  const { user, loading } = useAuthWithLoad();
   console.log(user);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.email === "") {
+    if (loading) {
+      return;
+    }
+    if (!user) {
       navigate("/login");
     }
     if (user?.email === "TPAWEB241") {
       navigate("/admin");
     }
-  }, [navigate, user]);
+  }, [navigate, user, loading]);
+
+  if (loading) {
+    return <></>;
+  }
 
   return (
     <div className="home-container">
