@@ -8,10 +8,13 @@ import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { Playlist } from "../../model/Playlist";
 import { getuserplaylist } from "../api-calls/home/getUserPlaylist";
 import { addprofileimage } from "../api-calls/auth/addprofileimage";
-import { getuserbyemail } from "../api-calls/auth/getuserbyemail";
+import { getuserbyusername } from "../api-calls/auth/getuserbyemail";
 import { User } from "../../model/User";
 import { FFM } from "../../model/FFM";
 import { getFFM } from "../api-calls/auth/getFFM";
+import { followperson } from "../api-calls/auth/followperson";
+import { validateuserfollowing } from "../api-calls/auth/validateuserfollowing";
+import { unfollowperson } from "../api-calls/auth/unfollowperson";
 type Props = {};
 
 const ProfilePage = (props: Props) => {
@@ -21,19 +24,22 @@ const ProfilePage = (props: Props) => {
   const [profileImg, setProfileImg] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File>();
   const [playlist, setPlaylist] = useState<Playlist[]>([]);
-  const { email } = useParams();
+  const { username } = useParams();
   const [currUser, setcurrUser] = useState<User>();
   const [FFM, setFFM] = useState<FFM>();
+  const [userFollowingId, setuserFollowingId] = useState<boolean>(false);
 
   const handleIconClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+    if (user?.username === currUser?.username) {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
     }
   };
 
   const fetchUser = async () => {
-    if (email) {
-      const response = await getuserbyemail(email);
+    if (username) {
+      const response = await getuserbyusername(username);
       setcurrUser(response);
     }
   };
@@ -81,19 +87,50 @@ const ProfilePage = (props: Props) => {
   }, [loading, user, navigate]);
 
   useEffect(() => {
+    if (currUser?.isartist && user?.isartist) {
+      if (currUser.username !== user.username) {
+        navigate(`/verifiedartist/${currUser.username}`);
+      }
+    }
     if (currUser?.isartist && !user?.isartist) {
-      navigate(`/verifiedartist/${currUser.email}`);
+      navigate(`/verifiedartist/${currUser.username}`);
     }
 
     if (currUser?.userid) {
       void fetchUserPlaylist();
       void fetchFFM();
+      void fetchUserFollowing();
     }
-  }, [currUser]);
-  // verifiedartist = param-> dari username yang artist && userauth yang rolenya bukan artist
-  // if (user?.isartist) navigate("/verifiedartist");
+  }, [currUser, userFollowingId]);
 
-  // profile = userauth yang rolenya artist || userauth yang bukan artist
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const fetchUserFollowing = async () => {
+    if (currUser?.userid && user?.userid) {
+      const response = await validateuserfollowing(
+        currUser.userid,
+        user.userid
+      );
+      setuserFollowingId(response);
+      console.log(response);
+    }
+  };
+
+  const handleFollowBtn = async () => {
+    if (currUser?.userid && user?.userid) {
+      await followperson(currUser.userid, user.userid);
+      setuserFollowingId(true);
+    }
+  };
+
+  const handleUnFollowBtn = async () => {
+    if (currUser?.userid && user?.userid) {
+      await unfollowperson(currUser.userid, user.userid);
+      setuserFollowingId(false);
+    }
+  };
 
   return (
     <div className="profile-container">
@@ -135,14 +172,28 @@ const ProfilePage = (props: Props) => {
         </div>
       </div>
       {user?.email !== currUser?.email ? (
-        <div className="follow-container">
-          <h5>Follow</h5>
-        </div>
+        userFollowingId ? (
+          <div className="follow-container" onClick={handleUnFollowBtn}>
+            <h5>UnFollow</h5>
+          </div>
+        ) : (
+          <div className="follow-container" onClick={handleFollowBtn}>
+            <h5>Follow</h5>
+          </div>
+        )
       ) : (
         <></>
       )}
-
-      <h3 style={{ marginLeft: "2vw", marginTop: "3vw" }}>Public Playlist</h3>
+      <div className="show-more">
+        <h3>Public Playlist</h3>
+        <h5
+          onClick={() =>
+            navigate(`/showmore/playlist?userId=${currUser?.userid}`)
+          }
+        >
+          Show More
+        </h5>
+      </div>
       <div className="albums-grid">
         {playlist && playlist.length > 0 ? (
           playlist.map((playlist, index) => (
@@ -166,15 +217,124 @@ const ProfilePage = (props: Props) => {
             </div>
           ))
         ) : (
-          <></>
+          <>
+            {" "}
+            <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+          </>
         )}
       </div>
 
-      <h3 style={{ marginLeft: "2vw", marginTop: "2vw" }}>Following</h3>
+      <div className="show-more">
+        <h3>Following</h3>
+        <h5
+          onClick={() =>
+            navigate(`/showmore/following?userId=${currUser?.userid}`)
+          }
+        >
+          Show More
+        </h5>
+      </div>
+      <div className="profile-grid">
+        {FFM && FFM.followinguser.length > 0 ? (
+          FFM.followinguser.map((item, idx) => (
+            <div
+              key={idx}
+              className="profile-item"
+              onClick={() =>
+                (window.location.href = `/profilepage/${item.username}`)
+              }
+            >
+              <img
+                src={
+                  "http://localhost:8888/files/" + item.profilepageimage ?? ""
+                }
+                alt=""
+              />
+              <div className="txt">
+                <h4>{item.username}</h4>
+                <h5>Profile</h5>
+              </div>
+            </div>
+          ))
+        ) : (
+          <>
+            {" "}
+            <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+          </>
+        )}
+      </div>
 
-      <h3 style={{ marginLeft: "2vw", marginTop: "3vw" }}>Followers</h3>
-
-      <h3 style={{ marginLeft: "2vw", marginTop: "3vw" }}>Mutual Following</h3>
+      <div className="show-more">
+        <h3>Follower</h3>
+        <h5
+          onClick={() =>
+            navigate(`/showmore/follower?userId=${currUser?.userid}`)
+          }
+        >
+          Show More
+        </h5>
+      </div>
+      <div className="profile-grid">
+        {FFM && FFM.followeruser.length > 0 ? (
+          FFM.followeruser.map((item, idx) => (
+            <div
+              key={idx}
+              className="profile-item"
+              onClick={() =>
+                (window.location.href = `/profilepage/${item.username}`)
+              }
+            >
+              <img
+                src={
+                  "http://localhost:8888/files/" + item.profilepageimage ?? ""
+                }
+                alt=""
+              />
+              <div className="txt">
+                <h4>{item.username}</h4>
+                <h5>Profile</h5>
+              </div>
+            </div>
+          ))
+        ) : (
+          <>
+            {" "}
+            <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+          </>
+        )}
+      </div>
+      <div className="show-more">
+        <h3>Mutual Following</h3>
+      </div>
+      <div className="profile-grid">
+        {FFM && FFM.mutualfollowinguser.length > 0 ? (
+          FFM.mutualfollowinguser.map((item, idx) => (
+            <div
+              key={idx}
+              className="profile-item"
+              onClick={() =>
+                (window.location.href = `/profilepage/${item.username}`)
+              }
+            >
+              <img
+                src={
+                  "http://localhost:8888/files/" + item.profilepageimage ?? ""
+                }
+                alt=""
+              />
+              <div className="txt">
+                <h4>{item.username}</h4>
+                <h5>Profile</h5>
+              </div>
+            </div>
+          ))
+        ) : (
+          <>
+            {" "}
+            <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+          </>
+        )}
+      </div>
     </div>
   );
 };

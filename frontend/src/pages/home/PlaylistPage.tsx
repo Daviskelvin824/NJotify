@@ -41,6 +41,7 @@ const PlaylistPage = () => {
   const [isQueueReady, setIsQueueReady] = useState(false);
   const { playStatus, play, pause, setQueue } = useContext(PlayerContext);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
+  
 
   useEffect(() => {
     if (loading) return;
@@ -310,7 +311,7 @@ const PlaylistPage = () => {
               </p>
               <p
                 style={{
-                  width: "21vw",
+                  width: "21.5vw",
                   fontSize: "0.9em",
                 }}
               >

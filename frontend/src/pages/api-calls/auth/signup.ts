@@ -9,13 +9,15 @@ export const signup = async (user: User): Promise<number | string> => {
       user,
       {
         withCredentials: true,
-      },
+      }
     );
     const result = response.data;
     if (result === "Password Must be Alphanumeric and has symbol") return -2;
     else if (result === "Invalid email format") return -3;
     else if (result === "Email is already registered") return -4;
     else if (result === "DOB must be in the past!") return -5;
+    else if (result === "Username Already Exist!") return -6;
+    console.log(result);
     return result;
   } catch (error) {
     if (axios.isAxiosError(error)) {

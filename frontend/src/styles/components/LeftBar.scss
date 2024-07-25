@@ -33,9 +33,13 @@
             border: none;
             color: grey; /* Set default text color */
             background-color: rgb(19, 19, 19);
-            &:hover {
-                color: #fff; /* Change text color on hover */
+
+            &:hover{
+                color: white;
             }
+        }
+        .home-btn.active {
+            color: #fff;
         }
     }
 

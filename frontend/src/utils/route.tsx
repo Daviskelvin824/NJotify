@@ -19,6 +19,8 @@ import PlaylistPage from "../pages/home/PlaylistPage";
 import ProfilePage from "../pages/home/ProfilePage";
 import VerifiedArtistPage from "../pages/home/VerifiedArtistPage";
 import SearchPage from "../pages/home/SearchPage";
+import ShowMorePage from "../pages/home/ShowMorePage";
+import NotificationPage from "../pages/auth/NotificationPage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +36,7 @@ export const router = createBrowserRouter([
       { path: "/activateaccount", element: <AccountVerif /> },
       { path: "/create-music", element: <CreateMusic /> },
       { path: "/manage-account", element: <ManageAccount /> },
+      { path: "/notification", element: <NotificationPage /> },
       { path: "/home", element: <Home /> },
       { path: "/edit-profile", element: <EditProfile /> },
       { path: "/get-verified", element: <GetVerified /> },
@@ -42,9 +45,10 @@ export const router = createBrowserRouter([
       { path: "/albumpage/:id", element: <AlbumPage /> },
       { path: "/trackpage/:index/:id", element: <TrackPage /> },
       { path: "/playlistpage/:id", element: <PlaylistPage /> },
-      { path: "/profilepage/:email", element: <ProfilePage /> },
-      { path: "/verifiedartist/:email", element: <VerifiedArtistPage /> },
+      { path: "/profilepage/:username", element: <ProfilePage /> },
+      { path: "/verifiedartist/:username", element: <VerifiedArtistPage /> },
       { path: "/searchpage", element: <SearchPage /> },
+      { path: "/showmore/:category", element: <ShowMorePage /> },
     ],
   },
 ]);

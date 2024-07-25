@@ -68,6 +68,8 @@ func GetUserFromJWT(c *gin.Context) (*response.UserResponse, error) {
 			IsArtist:         user.IsArtist,
 			BannerImage:      user.BannerImage,
 			AboutMe:          user.AboutMe,
+			ArtistNotification: user.ArtistNotification,
+			FollowerNotification: user.FollowerNotification,
 		}
 
 		if user.Email == "" {

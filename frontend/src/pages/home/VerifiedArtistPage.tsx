@@ -19,7 +19,10 @@ import { getfeaturedplaylist } from "../api-calls/home/getplaylistbytrackId";
 import { getplaylistbyid } from "../api-calls/home/getplaylistbyid";
 import { Playlist } from "../../model/Playlist";
 import ManageFooter from "../../components/ui/ManageFooter";
-import { getuserbyemail } from "../api-calls/auth/getuserbyemail";
+import { getuserbyusername } from "../api-calls/auth/getuserbyemail";
+import { followperson } from "../api-calls/auth/followperson";
+import { unfollowperson } from "../api-calls/auth/unfollowperson";
+import { validateuserfollowing } from "../api-calls/auth/validateuserfollowing";
 const VerifiedArtistPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuthWithLoad();
@@ -33,7 +36,8 @@ const VerifiedArtistPage = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [featurePlaylist, setfeaturePlaylist] = useState<Playlist[]>([]);
   const [currUser, setcurrUser] = useState<User>();
-  const { email } = useParams();
+  const { username } = useParams();
+  const [userFollowingId, setuserFollowingId] = useState<boolean>(false);
 
   const getPopularTrackByArtist = async () => {
     if (currUser?.userid) {
@@ -43,8 +47,8 @@ const VerifiedArtistPage = () => {
   };
 
   const fetchUser = async () => {
-    if (email) {
-      const response = await getuserbyemail(email);
+    if (username) {
+      const response = await getuserbyusername(username);
       setcurrUser(response);
     }
   };
@@ -129,8 +133,20 @@ const VerifiedArtistPage = () => {
     if (currUser?.userid) {
       void getPopularTrackByArtist();
       void fetchArtistAlbum();
+      void fetchUserFollowing();
     }
-  }, [currUser]);
+  }, [currUser, userFollowingId]);
+
+  const fetchUserFollowing = async () => {
+    if (currUser?.userid && user?.userid) {
+      const response = await validateuserfollowing(
+        currUser.userid,
+        user.userid
+      );
+      setuserFollowingId(response);
+      console.log(response);
+    }
+  };
 
   useEffect(() => {
     const fetchTrackDurations = async () => {
@@ -138,7 +154,6 @@ const VerifiedArtistPage = () => {
 
       for (const track of popularTrack) {
         try {
-          // Remove the surrounding double quotes from the filepath
           const cleanedPath = track.filepaths.replace(/"/g, "");
           const audio = new Audio(`http://localhost:8888/files/${cleanedPath}`);
           await new Promise<void>((resolve, reject) => {
@@ -153,11 +168,10 @@ const VerifiedArtistPage = () => {
           durations.push(null); // Handle error case or set default value
         }
       }
-
+      //@ts-ignore
       setpopulartrackDuration(durations);
     };
 
-    // Call fetchTrackDurations when popularTrack changes
     if (popularTrack.length > 0) {
       void fetchTrackDurations();
     }
@@ -218,6 +232,20 @@ const VerifiedArtistPage = () => {
     return false;
   });
 
+  const handleFollowBtn = async () => {
+    if (currUser?.userid && user?.userid) {
+      await followperson(currUser.userid, user.userid);
+      setuserFollowingId(true);
+    }
+  };
+
+  const handleUnFollowBtn = async () => {
+    if (currUser?.userid && user?.userid) {
+      await unfollowperson(currUser.userid, user.userid);
+      setuserFollowingId(false);
+    }
+  };
+
   return (
     <div className="verified-artist">
       <TopBar />
@@ -254,9 +282,19 @@ const VerifiedArtistPage = () => {
             <FontAwesomeIcon icon={faCirclePlay} className="icon-play" />
           </div>
         )}
-        <div className="follow-container">
-          <h5>Follow</h5>
-        </div>
+        {user?.email !== currUser?.email ? (
+          userFollowingId ? (
+            <div className="follow-container" onClick={handleUnFollowBtn}>
+              <h5>UnFollow</h5>
+            </div>
+          ) : (
+            <div className="follow-container" onClick={handleFollowBtn}>
+              <h5>Follow</h5>
+            </div>
+          )
+        ) : (
+          <></>
+        )}
       </div>
 
       <h5

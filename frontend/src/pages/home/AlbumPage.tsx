@@ -270,26 +270,41 @@ const AlbumPage = () => {
       </h2>
 
       <div className="albums-grid">
-        {albums.map((album, index) => (
-          <div
-            className="album-item"
-            key={index}
-            onClick={() => {
-              if (album.albumid) {
-                navigate(`/albumpage/${album.albumid.toString()}`);
-              }
+        {albums.length === 0 ||
+        !albums.some((album) => album.albumid !== currAlbum?.albumid) ? (
+          <h5
+            style={{
+              color: "grey",
+              fontWeight: "lighter",
+              marginLeft: "0.5vw",
             }}
           >
-            <img
-              src={"http://localhost:8888/files/" + album.imagepath}
-              alt={album.albumname}
-            />
-            <div className="album-info">
-              <h4>{album.albumname}</h4>
-              <h5>{new Date(album.createdat).getFullYear()}</h5>
-            </div>
-          </div>
-        ))}
+            No More Album by Artist
+          </h5>
+        ) : (
+          albums
+            .filter((album) => album.albumid !== currAlbum?.albumid)
+            .map((album, index) => (
+              <div
+                className="album-item"
+                key={index}
+                onClick={() => {
+                  if (album.albumid) {
+                    navigate(`/albumpage/${album.albumid.toString()}`);
+                  }
+                }}
+              >
+                <img
+                  src={"http://localhost:8888/files/" + album.imagepath}
+                  alt={album.albumname}
+                />
+                <div className="album-info">
+                  <h4>{album.albumname}</h4>
+                  <h5>{new Date(album.createdat).getFullYear()}</h5>
+                </div>
+              </div>
+            ))
+        )}
       </div>
       <br />
       <br />

@@ -1,6 +1,131 @@
-.home-container{
-    background: rgb(0,0,0);
-    background: linear-gradient(360deg, rgba(0,0,0,0.989233193277311) 69%, rgba(46,144,143,1) 86%);
-    height: 89%;
+.home-container {
+    background: rgb(0, 0, 0);
+    background: linear-gradient(
+      360deg,
+      rgba(0, 0, 0, 0.989233193277311) 69%,
+      rgba(46, 144, 143, 1) 86%
+    );
+    height: 100%;
     width: 100%;
-}
+  
+    .recenttrack-container {
+      margin-top: 3vw;
+      margin-inline: 1vw;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 100%; 
+      .row {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 10px;
+        width: 100%;
+        padding-inline: 1.5vw;
+        .item-container {
+          display: flex;
+          width: 100%;
+          justify-content: center; 
+          .item {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+            background-color: rgba(153, 153, 153, 0.3);
+            width: 100%;
+            max-width: 20vw;
+            height: 45px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            position: relative;
+            .left{
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            }
+
+            &:hover{
+                background-color: rgba(143, 143, 143, 0.6);
+            }
+  
+            img {
+              width: 45px;
+              height: 45px;
+            }
+  
+            h5 {
+              margin: 0; 
+            }
+            .icon-play{
+              width: 30px;
+              height: 30px;
+              margin-right: 1vw;
+              color: rgb(30,215,96);
+              display: none;
+              
+            }
+            &:hover .icon-play {
+              display: block; 
+            }
+            
+          }
+        }
+      }
+    }
+    
+    .recentplay-container{
+      margin-top: 2vw;
+      margin-inline: 1vw;
+      padding-left: 2vw;
+      display: flex;
+      gap: 27px;
+      .recentalbum-container{
+        padding: 0.5vw;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        border-radius: 5px;
+        img{
+          width: 25vh;
+          height: 25vh;
+          border-radius: 5px;
+          object-fit: cover;
+        }
+        h4{
+          margin-top: 0.5vw;
+        }
+
+        p{
+          color: grey;
+        }
+
+        &:hover{
+          background-color: rgb(19, 19, 19);
+        }
+      }
+    }
+
+    .recenttxt{
+      display: flex;
+      padding-inline: 2vw;
+      justify-content: space-between;
+      align-items: center;
+      margin-inline: 1.5vw;
+      margin-top: 2vw;
+      h5{
+        color: grey;
+        cursor: pointer;
+        &:hover{
+          text-decoration: underline;
+        }
+      }
+    }
+    
+    .recommended-container{
+      background-color: black;
+      margin-top: 2vw;
+      padding-bottom: 5vh;
+      padding-left: 1vw;
+    }
+  }
+  

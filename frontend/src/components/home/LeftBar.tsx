@@ -25,6 +25,7 @@ const LeftBar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [playlist, setPlaylist] = useState<Playlist[]>([]);
   const [previousLocation, setPreviousLocation] = useState<string | null>(null);
+
   const user: User | null = useAuth();
   useEffect(() => {
     if (user?.email === "") {
@@ -55,24 +56,27 @@ const LeftBar = () => {
   useEffect(() => {
     void fetchUserPlaylist();
   }, [user, showPopup]);
-
+  const isActive = (path: string) => location.pathname === path;
   return (
     <div className={"main-container"}>
       <div className="head-container">
         <button
-          className={"home-btn"}
+          className={`home-btn ${isActive("/home") ? "active" : ""}`}
           onClick={() => {
             navigate("/home");
           }}
         >
           <FontAwesomeIcon icon={faHome} /> <h3>Home</h3>
         </button>
-        <button className={"home-btn"} onClick={() => navigate("/searchpage")}>
+        <button
+          className={`home-btn ${isActive("/searchpage") ? "active" : ""}`}
+          onClick={() => navigate("/searchpage")}
+        >
           <FontAwesomeIcon icon={faSearch} /> <h3>Search</h3>
         </button>
         {isArtist && (
           <button
-            className={"home-btn"}
+            className={`home-btn ${isActive("/yourpost") ? "active" : ""}`}
             onClick={() => {
               navigate("/yourpost");
             }}
@@ -112,11 +116,11 @@ const LeftBar = () => {
                   alt=""
                 />
                 <div className="txt-container">
-                  <h5 style={{ fontWeight: "500", fontSize: "0.8em" }}>
+                  <h5 style={{ fontWeight: "500", fontSize: "0.9em" }}>
                     {item.playlisttitle}
                   </h5>
                   <p style={{ fontWeight: "lighter", fontSize: "small" }}>
-                    Playlist . {user?.username}
+                    Playlist by {user?.username}
                   </p>
                 </div>
               </div>

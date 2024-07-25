@@ -14,6 +14,13 @@ func NewPlaylistRepositoryImpl(DB *gorm.DB) PlaylistRepository{
 	return &PlaylistRepositoryImpl{DB:DB}
 }
 
+func(c *PlaylistRepositoryImpl) GetAllPlaylist()[]model.Playlist{
+	var playlists []model.Playlist
+	result:=c.DB.Find(&playlists)
+	helper.CheckPanic(result.Error)
+	return playlists
+}
+
 func (c *PlaylistRepositoryImpl) CreatePlaylist(playlist model.Playlist){
 	result := c.DB.Create(&playlist)
 	helper.CheckPanic(result.Error)
@@ -70,4 +77,11 @@ func(c *PlaylistRepositoryImpl) GetPlaylistDetailByTrackId(trackId uint) model.P
         helper.CheckPanic(result.Error)
     }
 	return playlistDetail
+}
+
+func(c *PlaylistRepositoryImpl) GetPlaylistPaginated(userId int, pageId int) []model.Playlist{
+	var playlists []model.Playlist
+	result := c.DB.Where("creator_id = ?",userId).Order("playlist_id ASC").Offset((pageId-1) * 4).Limit(4).Find(&playlists)
+	helper.CheckPanic(result.Error)
+	return playlists
 }

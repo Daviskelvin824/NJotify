@@ -15,6 +15,19 @@ func NewAlbumRepositoryImpl(Db *gorm.DB) AlbumRepository {
 	return &AlbumRepositoryImpl{Db: Db}
 }
 
+func (c *AlbumRepositoryImpl) GetAllAlbum() []model.Album{
+	var albums []model.Album
+	result:=c.Db.Find(&albums)
+	helper.CheckPanic(result.Error)
+	return albums
+}
+func (c *AlbumRepositoryImpl) GetAllTrack() []model.Track{
+	var tracks []model.Track
+	result:=c.Db.Find(&tracks)
+	helper.CheckPanic(result.Error)
+	return tracks
+}
+
 func (c *AlbumRepositoryImpl) CreateAlbum(album model.Album) model.Album {
 	result := c.Db.Create(&album)
 	helper.CheckPanic(result.Error)
@@ -77,4 +90,64 @@ func(c *AlbumRepositoryImpl) AddTrackHistory(history model.TrackHistory){
 func(c *AlbumRepositoryImpl) AddAlbumHistory(history model.AlbumHistory){
 	result := c.Db.Create(&history)
 	helper.CheckPanic(result.Error)
+}
+
+func (c *AlbumRepositoryImpl) GetRecentTrack(userId uint) []model.Track {
+    var recentTracks []model.Track
+    result := c.Db.Table("track_histories").
+        Select("tracks.*").
+        Joins("JOIN tracks ON tracks.track_id = track_histories.track_id").
+        Where("track_histories.user_id = ?", userId).
+        Group("tracks.track_id").
+        Order("MAX(track_histories.created_at) DESC").
+        Find(&recentTracks)
+    helper.CheckPanic(result.Error)
+    return recentTracks
+}
+
+func (c *AlbumRepositoryImpl) GetAlbumByAlbumId(albumId uint) model.Album{
+	var albums model.Album
+	result := c.Db.Where("album_id = ?",albumId).First(&albums)
+	helper.CheckPanic(result.Error)
+	return albums
+}
+
+func (c *AlbumRepositoryImpl) GetAllTrackPaginated(page int) []model.Track {
+	var tracks []model.Track
+	result := c.Db.Order("track_id ASC").Offset((page-1) * 4).Limit(4).Find(&tracks)
+	helper.CheckPanic(result.Error)
+	return tracks
+}
+
+func (c *AlbumRepositoryImpl) GetAllAlbumPaginated(page int) []model.Album {
+	var albums []model.Album
+	result := c.Db.Order("album_id ASC").Offset((page-1) * 4).Limit(4).Find(&albums)
+	helper.CheckPanic(result.Error)
+	return albums
+}
+
+func (c *AlbumRepositoryImpl) GetAllRecentAlbumPaginated(userId int,page int) []model.Album {
+	var albums []model.Album
+	result := c.Db.Table("album_histories").Select("albums.*").Joins("JOIN albums ON albums.album_id = album_histories.album_id").
+	Where("album_histories.user_id = ?", userId).
+	Group("albums.album_id").
+	Order("MAX(album_histories.created_at) DESC").Offset((page-1) * 4).Limit(4).
+	Find(&albums)
+	helper.CheckPanic(result.Error)
+	return albums
+}
+
+func (c *AlbumRepositoryImpl) GetTrackCount(trackId uint) int{
+	var count int64
+
+	result := c.Db.Table("track_histories").
+		Select("COUNT(*)").
+		Where("track_id = ?", trackId).
+		Count(&count)
+	
+	if result.Error != nil {
+		helper.CheckPanic(result.Error)
+	}
+
+	return int(count)
 }

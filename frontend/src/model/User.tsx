@@ -11,4 +11,6 @@ export interface User {
   isartist: boolean;
   bannerimage?: string;
   aboutme?: string;
+  artistnotification?: string;
+  followernotification?: string;
 }

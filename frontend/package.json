@@ -14,9 +14,12 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "concurrently": "^8.2.2",
+    "quill": "^2.0.2",
     "react": "^18.3.1",
     "react-cookie": "^7.1.4",
     "react-dom": "^18.3.1",
+    "react-loading-skeleton": "^3.4.0",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.24.0",
     "websocket": "^1.0.35"
   },

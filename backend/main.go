@@ -86,25 +86,27 @@ func main() {
 	playlistRepo := repository.NewPlaylistRepositoryImpl(db)
 
 	//set service
-	userService := service.NewUserServiceImpl(userRepo, validator)
-	albumService := service.NewAlbumServiceImpl(albumRepo, validator)
-	playlistService := service.NewPlaylistServiceImpl(playlistRepo,validator)
+	redisService := service.NewRedisServiceImpl()
+	userService := service.NewUserServiceImpl(userRepo, redisService,validator)
+	albumService := service.NewAlbumServiceImpl(albumRepo, redisService,validator)
+	playlistService := service.NewPlaylistServiceImpl(playlistRepo,redisService,validator)
 
 	// set controller
 	userController := controller.NewUserController(userService)
 	albumController := controller.NewAlbumController(albumService)
 	playlistController := controller.NewPlaylistController(playlistService)
+	searchController := controller.NewSearchController(userService,albumService,playlistService)
 
 	//set routing
 	router.UserRoute(routes, userController)
 	router.AlbumRoute(routes, albumController)
 	router.PlaylistRoute(routes, playlistController)
+	routes.GET("/search",searchController.Search)
 
 	server := &http.Server{
 		Addr:    ":8888",
 		Handler: corsHandler,
 	}
-	// routes.GET("/auth/google/callback", handleGoogleCallback)
 
 	err := server.ListenAndServe()
 	helper.CheckPanic(err)

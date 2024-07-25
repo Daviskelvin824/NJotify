@@ -1,0 +1,67 @@
+.infinite-container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; 
+    background-color: black;
+    padding-bottom: 6vw;
+    padding-left: 2vw;
+  }
+  
+  .page-container {
+    display: flex;
+    flex-direction: column; 
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 1.7vw;
+    
+    
+    .item-container {
+      padding: 0.5vw;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    img {
+      width: 25vh;
+      height: 25vh;
+      object-fit: cover;
+    }
+    &:hover{
+        background-color: rgb(19, 19, 19);
+      }
+
+      h4{
+        margin-top: 0.5vw;
+      }
+
+      p{
+        color: grey;
+      }
+  }
+
+  .skeleton-container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 30px; 
+    margin-left: 2vw; 
+    .skeleton-item {
+        flex: 1 1 25%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    
+        .skeleton-img {
+            width: 25vh; 
+            height: 25vh; 
+            border-radius: 5px;
+        }
+    
+        .skeleton-title {
+            margin-top: 2vw;
+        }
+
+    }
+}
+  
+  

@@ -2,6 +2,9 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/Daviskelvin824/TPA-Website/data/request"
 	"github.com/Daviskelvin824/TPA-Website/data/response"
@@ -15,10 +18,12 @@ import (
 type UserServiceImpl struct {
 	UserRepository repository.UserRepository
 	Validate       *validator.Validate
+	RedisService RedisService
 }
 
-func NewUserServiceImpl(userRepository repository.UserRepository, validate *validator.Validate) UserService {
+func NewUserServiceImpl(userRepository repository.UserRepository, redisService RedisService,validate *validator.Validate) UserService {
 	return &UserServiceImpl{
+		RedisService: redisService,
 		UserRepository: userRepository,
 		Validate:       validate,
 	}
@@ -38,6 +43,8 @@ func (c *UserServiceImpl) Create(users request.CreateUserRequest) {
 		IsArtist: false,
 	}
 	c.UserRepository.Save(userModel)
+	c.RedisService.ClearKeyFromRedis("verification_requests")
+
 }
 
 func (c *UserServiceImpl) FindAll() []response.UserResponse {
@@ -57,6 +64,32 @@ func (c *UserServiceImpl) FindAll() []response.UserResponse {
 			IsArtist: value.IsArtist,
 			BannerImage:      value.BannerImage,
 			AboutMe:          value.AboutMe,
+			ArtistNotification: value.ArtistNotification,
+			FollowerNotification: value.FollowerNotification,
+		}
+		users = append(users, user)
+	}
+	return users
+}
+func (c *UserServiceImpl) FindAllArtist() []response.UserResponse {
+	result := c.UserRepository.FindAllArtist()
+	var users []response.UserResponse
+	for _, value := range result {
+		user := response.UserResponse{
+			UserId:           value.UserId,
+			Email:            value.Email,
+			Username:         value.Username,
+			Password:         value.Password,
+			DOB:              value.DOB,
+			Gender:           value.Gender,
+			Country:          value.Country,
+			ProfilePageImage: value.ProfilePageImage,
+			IsVerified:       value.IsVerified,
+			IsArtist: value.IsArtist,
+			BannerImage:      value.BannerImage,
+			AboutMe:          value.AboutMe,
+			ArtistNotification: value.ArtistNotification,
+			FollowerNotification: value.FollowerNotification,
 		}
 		users = append(users, user)
 	}
@@ -64,6 +97,11 @@ func (c *UserServiceImpl) FindAll() []response.UserResponse {
 }
 
 func (c *UserServiceImpl) FindByEmail(email string) (response.UserResponse, error) {
+	var userRedis response.UserResponse
+	err:=c.RedisService.GetData("user_by_email:"+email, &userRedis)
+	if(err==nil){
+		return userRedis,nil
+	}
 	result, err := c.UserRepository.FindByEmail(email)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return response.UserResponse{}, gorm.ErrRecordNotFound // Return empty response and the error
@@ -85,7 +123,48 @@ func (c *UserServiceImpl) FindByEmail(email string) (response.UserResponse, erro
 		IsArtist: 		  result.IsArtist,
 		BannerImage:      result.BannerImage,
 		AboutMe:          result.AboutMe,
+		ArtistNotification: result.ArtistNotification,
+		FollowerNotification: result.FollowerNotification,
 	}
+
+	//habis fetch db, jangan lupa masukin redis
+	err = c.RedisService.SetData("user_by_email:"+email,user, time.Minute*10)
+	fmt.Println(err)
+
+	return user, nil
+}
+func (c *UserServiceImpl) FindByUsername(username string) (response.UserResponse, error) {
+	var userRedis response.UserResponse
+	err2:=c.RedisService.GetData("user_by_username:"+username, &userRedis)
+	if(err2==nil){
+		return userRedis,nil
+	}
+	result, err := c.UserRepository.FindByUsername(username)
+	fmt.Println("result = ",result)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return response.UserResponse{}, gorm.ErrRecordNotFound 
+	}
+
+	user := response.UserResponse{
+		UserId:           result.UserId,
+		Email:            result.Email,
+		Username:         result.Username,
+		Password:         result.Password,
+		DOB:              result.DOB,
+		Gender:           result.Gender,
+		Country:          result.Country,
+		ProfilePageImage: result.ProfilePageImage,
+		IsVerified:       result.IsVerified,
+		IsArtist: 		  result.IsArtist,
+		BannerImage:      result.BannerImage,
+		AboutMe:          result.AboutMe,
+		ArtistNotification: result.ArtistNotification,
+		FollowerNotification: result.FollowerNotification,
+	}
+
+	//habis fetch db, jangan lupa masukin redis
+	err = c.RedisService.SetData("user_by_username:"+username,user, time.Minute*10)
+	fmt.Println(err)
 
 	return user, nil
 }
@@ -113,12 +192,19 @@ func (c *UserServiceImpl) UpdateUser(user *response.UserResponse) error {
 		IsArtist:         user.IsArtist,
 		BannerImage:      user.BannerImage,
 		AboutMe:          user.AboutMe,
+		ArtistNotification: user.ArtistNotification,
+		FollowerNotification: user.FollowerNotification,
 	}
 
 	err := c.UserRepository.UpdateUser(userModel)
+	c.RedisService.ClearKeyFromRedis("user_by_id:" + strconv.Itoa(int(user.UserId)))
+	c.RedisService.ClearKeyFromRedis("user_by_username:" + user.Username)
+	c.RedisService.ClearKeyFromRedis("user_by_email:" + user.Email)
+	c.RedisService.ClearKeyFromRedis("verification_requests:" + "user")
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -137,9 +223,15 @@ func (c *UserServiceImpl) EditProfileUser(user *response.UserResponse) error {
 		IsArtist: user.IsArtist,
 		BannerImage: user.BannerImage,
 		AboutMe: user.AboutMe,
+		ArtistNotification: user.ArtistNotification,
+		FollowerNotification: user.FollowerNotification,
 	}
 
 	err := c.UserRepository.UpdateUser(userModel)
+	c.RedisService.ClearKeyFromRedis("user_by_id:" + strconv.Itoa(int(user.UserId)))
+	c.RedisService.ClearKeyFromRedis("user_by_username:" + user.Username)
+	c.RedisService.ClearKeyFromRedis("user_by_email:" + user.Email)
+	c.RedisService.ClearKeyFromRedis("verification_requests:" + "user")
 	if err != nil {
 		return err
 	}
@@ -147,7 +239,11 @@ func (c *UserServiceImpl) EditProfileUser(user *response.UserResponse) error {
 }
 
 func (s *UserServiceImpl) GetUserToVerify() (response.UserVerificationResponse, error) {
-
+	var userRedis response.UserVerificationResponse
+	err2:=s.RedisService.GetData("verification_requests:"+"user" ,&userRedis)
+	if(err2==nil){
+		return userRedis,nil
+	}
 	userVerificationInfo, err := s.UserRepository.GetUserToVerify()
 	if err != nil {
 		return response.UserVerificationResponse{}, err
@@ -158,11 +254,18 @@ func (s *UserServiceImpl) GetUserToVerify() (response.UserVerificationResponse, 
 		FollowingCount: userVerificationInfo.FollowingCount,
 		FollowerCount:  userVerificationInfo.FollowerCount,
 	}
-
+	err = s.RedisService.SetData("verification_requests:"+"user",userVerificationResponse, time.Minute*10)
+	fmt.Println(err)
 	return userVerificationResponse, nil
 }
 
 func (s *UserServiceImpl) GetUserByArtistId(artistId uint) response.UserResponse {
+	var artistRedis response.UserResponse
+	artistIdStr := strconv.FormatUint(uint64(artistId), 10)
+	err2:=s.RedisService.GetData("artist_by_id:"+artistIdStr ,&artistRedis)
+	if(err2==nil){
+		return artistRedis
+	}
 	user := s.UserRepository.FindByArtistId(artistId)
 	userResponse := response.UserResponse{
 		UserId:           user.UserId,
@@ -177,7 +280,11 @@ func (s *UserServiceImpl) GetUserByArtistId(artistId uint) response.UserResponse
 		IsArtist:         user.IsArtist,
 		BannerImage:      user.BannerImage,
 		AboutMe:          user.AboutMe,
+		ArtistNotification: user.ArtistNotification,
+		FollowerNotification: user.FollowerNotification,
 	}
+	err := s.RedisService.SetData("artist_by_id:"+artistIdStr,userResponse, time.Minute*10)
+	fmt.Println(err)
 	return userResponse
 }
 
@@ -185,3 +292,78 @@ func (c *UserServiceImpl) GetFFM(userId uint) response.FFMResponse{
 	result := c.UserRepository.GetFFM(userId)
 	return result
 }
+
+func(c *UserServiceImpl) FollowPerson(req request.FollowRequest){
+	followModel := model.Follow{
+		FollowingID: req.FollowingId,
+		FollowerID: req.FollowerId,
+	}
+	c.UserRepository.FollowPerson(followModel)
+}
+func(c *UserServiceImpl) UnFollowPerson(req request.FollowRequest){
+	followModel := model.Follow{
+		FollowingID: req.FollowingId,
+		FollowerID: req.FollowerId,
+	}
+	c.UserRepository.UnFollowPerson(followModel)
+}
+
+func (c *UserServiceImpl) ValidateFollowing(req request.FollowRequest) bool{
+	followModel := model.Follow{
+		FollowingID: req.FollowingId,
+		FollowerID: req.FollowerId,
+	}
+	response := c.UserRepository.ValidateFollowing(followModel)
+	return response
+}
+
+func (c *UserServiceImpl) GetFollowingPaginated(userId int, pageId int) []response.UserResponse{
+	result := c.UserRepository.GetFollowingPaginated(userId,pageId)
+	var users []response.UserResponse
+	for _,value := range result{
+		user := response.UserResponse{
+			UserId:           value.UserId,
+			Email:            value.Email,
+			Username:         value.Username,
+			Password:         value.Password,
+			DOB:              value.DOB,
+			Gender:           value.Gender,
+			Country:          value.Country,
+			ProfilePageImage: value.ProfilePageImage,
+			IsVerified:       value.IsVerified,
+			IsArtist: value.IsArtist,
+			BannerImage:      value.BannerImage,
+			AboutMe:          value.AboutMe,
+			ArtistNotification: value.ArtistNotification,
+			FollowerNotification: value.FollowerNotification,
+		}
+		users = append(users, user)
+	}
+	return users
+}
+
+func (c *UserServiceImpl) GetFollowerPaginated(userId int, pageId int) []response.UserResponse{
+	result := c.UserRepository.GetFollowerPaginated(userId,pageId)
+	var users []response.UserResponse
+	for _,value := range result{
+		user := response.UserResponse{
+			UserId:           value.UserId,
+			Email:            value.Email,
+			Username:         value.Username,
+			Password:         value.Password,
+			DOB:              value.DOB,
+			Gender:           value.Gender,
+			Country:          value.Country,
+			ProfilePageImage: value.ProfilePageImage,
+			IsVerified:       value.IsVerified,
+			IsArtist: value.IsArtist,
+			BannerImage:      value.BannerImage,
+			AboutMe:          value.AboutMe,
+			ArtistNotification: value.ArtistNotification,
+			FollowerNotification: value.FollowerNotification,
+		}
+		users = append(users, user)
+	}
+	return users
+}
+

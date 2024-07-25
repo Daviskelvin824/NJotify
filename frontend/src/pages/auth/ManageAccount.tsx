@@ -1,12 +1,11 @@
 import "../../styles/auth/ManageAccount.scss";
 
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import useAuthWithLoad from "../../hooks/useAuthWIthLoad";
-import type { User } from "../../model/User";
 import { logout } from "../api-calls/auth/logout";
 
 const ManageAccount = () => {
@@ -44,15 +43,15 @@ const ManageAccount = () => {
           <h3>Account</h3>
           <div className="btn-container">
             <h4>Order History</h4>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+            <FontAwesomeIcon icon={faChevronRight} className="icon" />
           </div>
           <div className="btn-container" onClick={handleEditProfile}>
             <h4>Edit Profile</h4>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+            <FontAwesomeIcon icon={faChevronRight} className="icon" />
           </div>
           <div className="btn-container" onClick={handleGetVerified}>
             <h4>Get Verified</h4>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+            <FontAwesomeIcon icon={faChevronRight} className="icon" />
           </div>
         </div>
         <br />
@@ -60,15 +59,18 @@ const ManageAccount = () => {
           <h3>Privacy and Security</h3>
           <div className="btn-container">
             <h4>Change Password</h4>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+            <FontAwesomeIcon icon={faChevronRight} className="icon" />
           </div>
-          <div className="btn-container">
+          <div
+            className="btn-container"
+            onClick={() => navigate("/notification")}
+          >
             <h4>Notification Settings</h4>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+            <FontAwesomeIcon icon={faChevronRight} className="icon" />
           </div>
           <div className="btn-container" onClick={logouts}>
             <h4>Sign Out</h4>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+            <FontAwesomeIcon icon={faChevronRight} className="icon" />
           </div>
         </div>
       </div>

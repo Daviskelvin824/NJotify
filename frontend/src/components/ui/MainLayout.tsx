@@ -43,6 +43,7 @@ const MainLayout = () => {
     "/edit-profile",
     "/get-verified",
     "/admin",
+    "/notification",
   ];
   const showLeft = !hideLeftBar.includes(location.pathname);
 
@@ -50,6 +51,7 @@ const MainLayout = () => {
     "/manage-account",
     "/edit-profile",
     "/get-verified",
+    "/notification",
   ];
   const showManageNav = showManageNavbar.includes(location.pathname);
 
@@ -58,6 +60,7 @@ const MainLayout = () => {
     "/edit-profile",
     "/get-verified",
     "/admin",
+    "/notification",
   ];
   const showManageFoot = showManageFooter.includes(location.pathname);
 
@@ -70,6 +73,7 @@ const MainLayout = () => {
     "/edit-profile",
     "/get-verified",
     "/admin",
+    "/notification",
   ];
   const showBottomBar = !hideBottomBar.includes(location.pathname);
 

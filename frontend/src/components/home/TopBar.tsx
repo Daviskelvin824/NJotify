@@ -1,9 +1,9 @@
 import "../../styles/components/TopBar.scss";
 
 import {
-  faArrowLeft,
-  faArrowRight,
   faBell,
+  faChevronLeft,
+  faChevronRight,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,10 +24,12 @@ const TopBar = () => {
 
   const handleManageAccount = () => {
     window.open("/manage-account", "_blank");
+    setShowDropdown(false);
   };
 
   const handleProfileClicked = () => {
-    window.open(`/profilepage/${user?.email}`, "_blank");
+    navigate(`/profilepage/${user?.username}`);
+    setShowDropdown(false);
   };
 
   const submit = (e: React.FormEvent) => {
@@ -60,10 +62,10 @@ const TopBar = () => {
       <div className="topsecond-container">
         <div className="icon-container">
           <div className="rounded-icon" onClick={handleBack}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <FontAwesomeIcon icon={faChevronLeft} />
           </div>
           <div className="rounded-icon" onClick={handleForward}>
-            <FontAwesomeIcon icon={faArrowRight} />
+            <FontAwesomeIcon icon={faChevronRight} />
           </div>
         </div>
         <div className="icon-container">

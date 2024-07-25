@@ -93,3 +93,41 @@ func SendForgotPasswordEmail(email string) error {
 
 	return nil
 }
+
+func DamerauLevenshteinDistance(s1 string, s2 string) int {
+	// Create a table to store the results of subproblems
+	dy := len(s1)
+	dx := len(s2)
+	dp := make([][]int, dy+1)
+	for i := range dp {
+	 dp[i] = make([]int, dx+1)
+	}
+   
+	for i := 0; i <= dy; i++ {
+	 dp[i][0] = i
+	}
+	for j := 0; j <= dx; j++ {
+	 dp[0][j] = j
+	}
+   
+	// Populate the table using dynamic programming
+	for i := 1; i <= dy; i++ {
+	 for j := 1; j <= dx; j++ {
+	  if s1[i-1] == s2[j-1] {
+	   dp[i][j] = dp[i-1][j-1]
+	  } else {
+	   dp[i][j] = 1 + min(min(dp[i-1][j], dp[i][j-1]), dp[i-1][j-1])
+	  }
+	 }
+	}
+   
+	// Return the edit distance 
+	return dp[len(s1)][len(s2)]
+   }
+   
+   func min(a int, b int) int {
+	if a < b {
+	 return a
+	}
+	return b
+}

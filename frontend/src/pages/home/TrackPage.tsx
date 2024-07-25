@@ -140,6 +140,7 @@ const TrackPage = () => {
       const cleanedPath = track.replace(/"/g, "");
       const audio = new Audio(`http://localhost:8888/files/${cleanedPath}`);
       audio.addEventListener("loadedmetadata", () => {
+        //@ts-ignore
         settrackDuration(audio.duration);
       });
     }
@@ -166,7 +167,7 @@ const TrackPage = () => {
           durations.push(null); // Handle error case or set default value
         }
       }
-
+      //@ts-ignore
       setpopulartrackDuration(durations);
     };
 
@@ -195,6 +196,7 @@ const TrackPage = () => {
           durations.push(null);
         }
       }
+      //@ts-ignore
       settrackalbumduration(durations);
     };
 
@@ -244,7 +246,7 @@ const TrackPage = () => {
     const trackId = trackalbumtrackid[index];
 
     if (currAlbum?.albumid) {
-      navigate(`/trackpage/${trackId}/${currAlbum.albumid}`);
+      window.location.href = `/trackpage/${trackId.toString()}/${currAlbum.albumid}`;
     }
   };
 
@@ -282,6 +284,8 @@ const TrackPage = () => {
             ) : (
               <h1 className="img-con">{artist?.username.charAt(0)}</h1>
             )}
+            <p>{artist?.username} . </p>
+            <p>{trackTitle.slice(0, 20)} . </p>
             <p>{currAlbum && new Date(currAlbum.createdat).getFullYear()} . </p>
             <p>{formatTime(Math.round(Number(trackDuration)))}</p>
           </div>
@@ -361,9 +365,7 @@ const TrackPage = () => {
             className="track-item"
             onClick={() => {
               if (track.trackid && track.albumid) {
-                navigate(
-                  `/trackpage/${track.trackid.toString()}/${track.albumid.toString()}`
-                );
+                window.location.href = `/trackpage/${track.trackid.toString()}/${track.albumid.toString()}`;
               }
             }}
           >

@@ -34,10 +34,27 @@ func (c *UserRepositoryImpl) FindAll() []model.User {
 	helper.CheckPanic(result.Error)
 	return users
 }
+func (c *UserRepositoryImpl) FindAllArtist() []model.User {
+	var users []model.User
+	result := c.Db.Where("is_artist = ?", true).Find(&users)
+	helper.CheckPanic(result.Error)
+	return users
+}
 
 func (repo *UserRepositoryImpl) FindByEmail(email string) (model.User, error) {
 	var user model.User
 	result := repo.Db.Where("email = ?", email).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return model.User{}, gorm.ErrRecordNotFound // Return the error directly
+	}
+	if result.Error != nil {
+		return model.User{}, result.Error // Return other errors as usual
+	}
+	return user, nil
+}
+func (repo *UserRepositoryImpl) FindByUsername(username string) (model.User, error) {
+	var user model.User
+	result := repo.Db.Where("username = ?", username).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return model.User{}, gorm.ErrRecordNotFound // Return the error directly
 	}
@@ -174,4 +191,45 @@ func (repo *UserRepositoryImpl) GetFFM(userId uint) response.FFMResponse{
 
 	return ffmRes
 	
+}
+
+func (c *UserRepositoryImpl) FollowPerson(follow model.Follow){
+	result := c.Db.Create(&follow)
+	helper.CheckPanic(result.Error)
+}
+
+func (c *UserRepositoryImpl) UnFollowPerson(follow model.Follow){
+	result := c.Db.Where("following_id = ? AND follower_id = ?", follow.FollowingID,follow.FollowerID).Delete(&follow)
+	helper.CheckPanic(result.Error)
+}
+
+func (c *UserRepositoryImpl) ValidateFollowing(follow model.Follow) bool{
+	result := c.Db.Where("following_id = ? AND follower_id = ?", follow.FollowingID,follow.FollowerID).First(&follow)
+	if result.RowsAffected > 0 {
+        return true
+    } else {
+        return false
+    }
+}
+
+func(repo *UserRepositoryImpl) GetFollowingPaginated(userId int, pageId int) []model.User{
+	users := []model.User{}
+	err := repo.Db.Table("users").Select("users.*").
+        Joins("JOIN follows ON follows.following_id = users.user_id").
+        Where("follows.follower_id = ?", userId).Order("users.user_id ASC").Offset((pageId-1) * 4).Limit(4).
+        Find(&users).Error
+
+    helper.CheckPanic(err)
+	return users
+}
+
+func(repo *UserRepositoryImpl) GetFollowerPaginated(userId int, pageId int) []model.User{
+	users := []model.User{}
+	err := repo.Db.Table("users").Select("users.*").
+        Joins("JOIN follows ON follows.follower_id = users.user_id").
+        Where("follows.following_id = ?", userId).Order("users.user_id ASC").Offset((pageId-1) * 4).Limit(4).
+        Find(&users).Error
+
+    helper.CheckPanic(err)
+	return users
 }

@@ -14,4 +14,6 @@ type CreateUserRequest struct {
 	IsArtist         bool      `json:"isartist"`
 	BannerImage      *string   `json:"bannerimage"`
 	AboutMe          *string   `json:"aboutme"`
+	ArtistNotification *string `json:"artistnotification"`
+	FollowerNotification *string `json:"followernotification"`
 }

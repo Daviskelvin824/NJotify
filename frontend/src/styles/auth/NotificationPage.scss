@@ -1,0 +1,162 @@
+.notif-container{
+    background-color: rgb(26, 26, 26);
+    width: 100%;
+    height: 100%;
+    padding-top: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .second-container {
+        // background-color: black;
+        width: 45vw;
+        height: 60vh;
+        display: flex;
+        justify-content: flex-start;
+        align-items: left;
+        flex-direction: column;
+        border-radius: 5px;
+
+        .body-container{
+            .rounded-icon {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 40px; 
+                height: 40px; 
+                border-radius: 50%;
+                background-color: #333; 
+                cursor: pointer; 
+                transition: background-color 0.3s ease;
+                
+                &:hover {
+                  background-color: rgb(66, 66, 66); 
+                }
+              }
+
+            .title-container{
+              display: flex;
+              flex-direction: column;
+              margin-top: 2vw;
+              gap: 10px;
+              margin-bottom: 1vw;
+              h5{
+                font-weight: normal;
+              }
+            }
+
+            .icon{
+              display: flex;
+              justify-content: end;
+              gap: 20px;
+              margin-right: 4.8vw;
+
+              .email-icon{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                h5{
+                  font-weight: normal;
+                }
+              }
+              .push-icon{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                h5{
+                  font-weight: normal;
+                }
+              }
+            }
+
+            .content-container{
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-top: 1vw;
+              .head-content{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                h5{
+
+                  font-weight: normal;
+                }
+              }
+
+              .check-content{
+                display: flex;
+                margin-right: 5.3vw;
+                gap: 35px;
+                input{
+                  cursor: pointer;
+                  width: 1vw;
+                 
+                  height: 1vw;
+                }
+              }
+
+              .check-content input[type="checkbox"] {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                border: 1px solid grey;
+                border-radius: 2px;
+                background-color: black;
+                cursor: pointer;
+              }
+              
+              .check-content input[type="checkbox"]:checked {
+                background-color: rgb(30,215,96);
+              }
+
+              .check-content input[type="checkbox"]:checked::before {
+                content: '✔';
+                color: white;
+                margin-left: 2px;
+              }
+
+            }
+            .error-message {
+              color: red;
+              font-size: 1em;
+              text-align: right;
+              margin-right: 5vw;
+          }
+          
+          .btn-container{
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1vw;
+            margin-top: 3vw;
+            button{
+                  margin-right: 4.5vw;
+                  width: 10%;
+                  background-color: rgb(30,215,96);
+                  height: 4vh;
+                  border: 1px solid black;
+                  border-radius: 50px;
+                  color: black;
+                  font-weight: bold;
+                  font-size: medium;
+                  cursor: pointer;
+                  transition: background-color 0.3s ease;
+                  &:hover {
+                      background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+                  }
+              }
+              a{
+                  color: grey;
+                  font-weight: normal;
+                  &:hover{
+                    text-decoration: underline;
+                  }
+              }
+          }
+        }
+    }
+}

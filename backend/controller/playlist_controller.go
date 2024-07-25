@@ -36,6 +36,17 @@ func NewPlaylistController(playlistservice service.PlaylistService) *PLaylistCon
 	}
 }
 
+func(controller *PLaylistController) GetAllPlaylist(ctx *gin.Context){
+	result := controller.PlaylistService.GetAllPlaylist();
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
 func (controller *PLaylistController) CreatePlaylist(ctx *gin.Context){
 	playlistReq := request.CreatePlaylistRequest{}
 	form, err := ctx.MultipartForm()
@@ -174,4 +185,21 @@ func (controller *PLaylistController) GetPlaylistDetailByTrackId (ctx *gin.Conte
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse.Data)
 
+}
+
+func (controller *PLaylistController) ShowmorePlaylist (ctx *gin.Context){
+	pageIdStr := ctx.Query("pageid")
+	creatorIdStr := ctx.Query("creatorid")
+	pageId, err := strconv.Atoi(pageIdStr)
+	helper.CheckPanic(err)
+	creatorId, err2 := strconv.Atoi(creatorIdStr)
+	helper.CheckPanic(err2)
+	result := controller.PlaylistService.GetPlaylistPaginated(creatorId,pageId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
 }

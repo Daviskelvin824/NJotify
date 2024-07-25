@@ -2,7 +2,7 @@
 
 import "../../styles/auth/EditProfile.scss";
 
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,8 +35,8 @@ const EditProfile = () => {
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
-    const month = `0${date.getMonth() + 1}`.slice(-2); 
-    const day = `0${date.getDate()}`.slice(-2); 
+    const month = `0${date.getMonth() + 1}`.slice(-2);
+    const day = `0${date.getDate()}`.slice(-2);
     return `${year}-${month}-${day}`;
   };
 
@@ -68,7 +68,7 @@ const EditProfile = () => {
       <div className="second-container">
         <div className="head-container">
           <div className="rounded-icon" onClick={handleBackBtn}>
-            <FontAwesomeIcon icon={faArrowLeft} />
+            <FontAwesomeIcon icon={faChevronLeft} />
           </div>
           <h1>Edit Profile</h1>
           <h5>User ID: {user?.userid}</h5>

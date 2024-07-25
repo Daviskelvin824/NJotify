@@ -23,10 +23,39 @@ type AlbumRequest struct {
 	ArtistId int `json:"artistid"`
 }
 
+type AlbumIdRequest struct{
+	AlbumId uint `json:"albumid"`
+}
+
+type PageReq struct{
+	PageId int `json:"pageid"`
+}
+
 func NewAlbumController(service service.AlbumService) *AlbumController {
 	return &AlbumController{
 		albumService: service,
 	}
+}
+
+func(controller *AlbumController) GetAllAlbum(ctx *gin.Context){
+	result := controller.albumService.GetAllAlbum()
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:  result,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+func(controller *AlbumController) GetAllTrack(ctx *gin.Context){
+	result := controller.albumService.GetAllTrack()
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:  result,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
 func (controller *AlbumController) CreateAlbum(ctx *gin.Context) {
@@ -222,4 +251,82 @@ func (controller *AlbumController) AddAlbumHistory(ctx *gin.Context){
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse.Data)
 
+}
+
+func (controller *AlbumController) GetRecentTrack(ctx *gin.Context){
+	var userId ArtistRequest
+	err := ctx.ShouldBindJSON(&userId)
+	helper.CheckPanic(err)
+	result := controller.albumService.GetRecentTrack(uint(userId.ArtistId))
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *AlbumController) GetAlbumByAlbumId(ctx *gin.Context){
+	var albumId AlbumIdRequest
+	err := ctx.ShouldBindJSON(&albumId)
+	helper.CheckPanic(err)
+
+	result := controller.albumService.GetAlbumByAlbumId(albumId.AlbumId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+
+}
+
+func(controller *AlbumController) ShowMoreAlbum(ctx *gin.Context){
+	pageIdStr := ctx.Query("pageid")
+	fmt.Println(pageIdStr)
+	pageId, err := strconv.Atoi(pageIdStr)
+	helper.CheckPanic(err)
+	result := controller.albumService.GetAllAlbumPaginated(pageId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+	
+}
+func(controller *AlbumController) ShowMoreRecentAlbum(ctx *gin.Context){
+	pageIdStr := ctx.Query("pageid")
+	user,_ := middleware.GetUserFromJWT(ctx)
+	fmt.Println(pageIdStr)
+	pageId, err := strconv.Atoi(pageIdStr)
+	helper.CheckPanic(err)
+	result := controller.albumService.GetAllRecentAlbumPaginated(int(user.UserId),pageId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+	
+}
+
+func(controller *AlbumController) ShowMoreTrack(ctx *gin.Context){
+	pageIdStr := ctx.Query("pageid")
+	fmt.Println(pageIdStr)
+	pageId, err := strconv.Atoi(pageIdStr)
+	helper.CheckPanic(err)
+	result := controller.albumService.GetAllTrackPaginated(pageId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+	
 }

@@ -1,6 +1,6 @@
 import "../../styles/auth/GetVerified.scss";
 
-import { faArrowLeft, faCamera } from "@fortawesome/free-solid-svg-icons";
+import { faCamera, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -57,7 +57,7 @@ const GetVerified = () => {
     <div className="edit-container">
       <div className="second-container">
         <div className="rounded-icon" onClick={handleBackBtn}>
-          <FontAwesomeIcon icon={faArrowLeft} />
+          <FontAwesomeIcon icon={faChevronLeft} />
         </div>
         <h1>Get Verified</h1>
         <div className="third-container">

@@ -54,7 +54,9 @@ const QueueBar = () => {
             </div>
           </div>
         ) : (
-          <></>
+          <>
+            <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+          </>
         )}
       </div>
 
@@ -98,7 +100,9 @@ const QueueBar = () => {
             </div>
           ))
         ) : (
-          <></>
+          <>
+            <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+          </>
         )}
       </div>
     </div>

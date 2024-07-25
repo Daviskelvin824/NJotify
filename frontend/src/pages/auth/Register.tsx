@@ -146,6 +146,9 @@ const Register = () => {
       } else if (response === -5) {
         setErrorMessage("DOB must be in the past!");
         return;
+      } else if (response === -6) {
+        setErrorMessage("Username Already Exist!");
+        return;
       } else {
         navigate("/login");
       }

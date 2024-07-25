@@ -179,8 +179,8 @@
         padding: 10px;
         border-radius: 5px;
         transition: transform 0.2s ease-in-out;
-        height: 27vh;
-        width: 27vh;
+        width: 100%;
+        aspect-ratio: 1;
 
         img{
             width: 100%;

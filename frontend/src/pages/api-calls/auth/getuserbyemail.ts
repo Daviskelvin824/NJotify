@@ -2,10 +2,10 @@ import axios from "axios";
 
 import type { User } from "../../../model/User";
 
-export const getuserbyemail = async (email: string): Promise<User> => {
+export const getuserbyusername = async (email: string): Promise<User> => {
   try {
     const response = await axios.post<User>(
-      "http://localhost:8888/getuserbyemail",
+      "http://localhost:8888/getuserbyusername",
       {
         email,
       }

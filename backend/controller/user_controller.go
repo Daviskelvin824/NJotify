@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"net/mail"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/Daviskelvin824/TPA-Website/data/request"
 	"github.com/Daviskelvin824/TPA-Website/data/response"
 	"github.com/Daviskelvin824/TPA-Website/helper"
+	"github.com/Daviskelvin824/TPA-Website/middleware"
 	"github.com/Daviskelvin824/TPA-Website/service"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -55,8 +57,18 @@ func (controller *UserController) Create(ctx *gin.Context) {
 		return
 	}
 
+	//Check if username is already registered
+	userusername, _:=controller.userService.FindByUsername(createUserReq.Username)
+	fmt.Println("user = ",userusername)
+	if(userusername.Email!=""){
+		ctx.JSON(200, "Username Already Exist!")
+		return
+	}
+
 	// Check if email is already registered
 	existingUser, err := controller.userService.FindByEmail(createUserReq.Email)
+
+
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		// Email is not registered, proceed with user creation
@@ -108,6 +120,18 @@ func (controller *UserController) Create(ctx *gin.Context) {
 func (controller *UserController) FindAll(ctx *gin.Context) {
 	fmt.Println("Fetching All Data...")
 	userReponse := controller.userService.FindAll()
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   userReponse,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func (controller *UserController) FindAllArtist(ctx *gin.Context) {
+	fmt.Println("Fetching All Data...")
+	userReponse := controller.userService.FindAllArtist()
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -488,13 +512,13 @@ func (controller *UserController) AddProfileImage(ctx *gin.Context){
 
 }
 
-func(controller *UserController) GetUserByEmail(ctx *gin.Context){
+func(controller *UserController) GetUserByUsername(ctx *gin.Context){
 	var email EmailRequest
 	err := ctx.ShouldBindJSON(&email)
 	helper.CheckPanic(err)
 	fmt.Println("req = ", email)
 
-	user,err := controller.userService.FindByEmail(email.Email)
+	user,err := controller.userService.FindByUsername(email.Email)
 	helper.CheckPanic(err)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
@@ -519,4 +543,100 @@ func(controller *UserController) GetFFM(ctx *gin.Context){
 	}
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) FollowPerson(ctx *gin.Context){
+	followReq := request.FollowRequest{}
+	err := ctx.ShouldBindJSON(&followReq)
+	helper.CheckPanic(err)
+	fmt.Println(followReq)
+	controller.userService.FollowPerson(followReq)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   nil,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+func(controller *UserController) UnFollowPerson(ctx *gin.Context){
+	followReq := request.FollowRequest{}
+	err := ctx.ShouldBindJSON(&followReq)
+	helper.CheckPanic(err)
+	fmt.Println(followReq)
+	controller.userService.UnFollowPerson(followReq)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   nil,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) ValidateFollowing(ctx *gin.Context){
+	followReq := request.FollowRequest{}
+	err := ctx.ShouldBindJSON(&followReq)
+	helper.CheckPanic(err)
+	fmt.Println(followReq)
+	response2 := controller.userService.ValidateFollowing(followReq)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   response2,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) ShowMoreFollowing(ctx *gin.Context){
+	pageIdStr := ctx.Query("pageid")
+	creatorIdStr := ctx.Query("userId")
+	pageId, err := strconv.Atoi(pageIdStr)
+	helper.CheckPanic(err)
+	creatorId, err2 := strconv.Atoi(creatorIdStr)
+	helper.CheckPanic(err2)
+	result := controller.userService.GetFollowingPaginated(creatorId,pageId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) ShowMoreFollower(ctx *gin.Context){
+	pageIdStr := ctx.Query("pageid")
+	creatorIdStr := ctx.Query("userId")
+	pageId, err := strconv.Atoi(pageIdStr)
+	helper.CheckPanic(err)
+	creatorId, err2 := strconv.Atoi(creatorIdStr)
+	helper.CheckPanic(err2)
+	result := controller.userService.GetFollowerPaginated(creatorId,pageId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) UpdateUserNotif(ctx *gin.Context){
+	notifReq := request.UpdateNotifRequest{}
+	err := ctx.ShouldBindJSON(&notifReq)
+	helper.CheckPanic(err)
+
+	user,err2 := middleware.GetUserFromJWT(ctx)
+	helper.CheckPanic(err2)
+
+	currUser,_ := controller.userService.FindByEmail(user.Email)
+	currUser.ArtistNotification = &notifReq.ArtistNotif
+	currUser.FollowerNotification = &notifReq.FollowerNotif
+	resetErr := controller.userService.UpdateUser(&currUser)
+	if resetErr != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
+		return
+	}
 }

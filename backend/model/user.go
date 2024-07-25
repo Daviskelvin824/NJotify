@@ -15,4 +15,6 @@ type User struct {
 	IsArtist         bool    `gorm:"type:boolean;default:false"`
 	BannerImage      *string `gorm:"type:varchar(255)"`
 	AboutMe          *string `gorm:"type:text"`
+	ArtistNotification *string `gorm:"type:text"`
+	FollowerNotification *string `gorm:"type:text"`
 }
