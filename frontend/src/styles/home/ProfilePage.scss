@@ -123,6 +123,7 @@
     width: 100%;
     display: flex; 
     flex-wrap: wrap; 
+    column-gap: 30px;
 
     .profile-item{ 
       gap: 10px;
@@ -136,6 +137,19 @@
         flex-direction: column;
         gap: 5px;
       }
+      .img-txt{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(30,215,96);
+        width: 10vw;
+        height: 10vw;
+        border-radius: 50%;
+        h1{
+          color: black;
+        }
+      }
+      
       img{
         width: 10vw;
         height: 10vw;

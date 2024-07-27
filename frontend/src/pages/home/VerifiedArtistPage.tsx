@@ -407,30 +407,45 @@ const VerifiedArtistPage = () => {
       >
         Featuring {currUser?.username}
       </h5>
-      <div className="albums-grid">
-        {featurePlaylist.slice(0, 5).map((playlist, index) => (
-          <div
-            className="album-item"
-            key={index}
-            onClick={() => {
-              if (playlist.playlistid) {
-                navigate(`/playlistpage/${playlist.playlistid.toString()}`);
-              }
+      {featurePlaylist && featurePlaylist.length > 0 ? (
+        <div className="albums-grid">
+          {featurePlaylist.slice(0, 5).map((playlist, index) => (
+            <div
+              className="album-item"
+              key={index}
+              onClick={() => {
+                if (playlist.playlistid) {
+                  navigate(`/playlistpage/${playlist.playlistid.toString()}`);
+                }
+              }}
+            >
+              <img
+                src={"http://localhost:8888/files/" + playlist.playlistimg}
+                alt={""}
+              />
+              <div className="album-info">
+                <h4>{playlist.playlisttitle}</h4>
+                <h5 style={{ fontWeight: "lighter", fontSize: "small" }}>
+                  {playlist.playlistdesc}
+                </h5>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <h5
+            style={{
+              color: "grey",
+              fontWeight: "lighter",
+              marginLeft: "1.2vw",
+              marginTop: "2vw",
             }}
           >
-            <img
-              src={"http://localhost:8888/files/" + playlist.playlistimg}
-              alt={""}
-            />
-            <div className="album-info">
-              <h4>{playlist.playlisttitle}</h4>
-              <h5 style={{ fontWeight: "lighter", fontSize: "small" }}>
-                {playlist.playlistdesc}
-              </h5>
-            </div>
-          </div>
-        ))}
-      </div>
+            Empty
+          </h5>
+        </>
+      )}
       <br />
       <ManageFooter />
     </div>

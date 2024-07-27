@@ -47,6 +47,7 @@ const GetVerified = () => {
       if (user?.email && bannerImagePath) {
         await getverified(user.email, bannerImagePath, AboutMe);
         setRefreshData(!refreshData);
+        alert("Verification request submitted successfully!");
         window.location.reload();
       }
     };

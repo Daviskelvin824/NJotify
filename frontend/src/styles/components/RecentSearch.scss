@@ -1,0 +1,25 @@
+.recentsearch-container{
+    width: 100%;
+    display: flex;
+    column-gap: 10px;
+    .recent-item{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        cursor: pointer;
+        padding: 0.5vw;
+        &:hover{
+            background-color: rgb(19, 19, 19);
+        }
+        img{
+            width: 25vh;
+            height: 25vh;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        p{
+            color: grey;
+        }
+    }
+}

@@ -41,7 +41,6 @@ const PlaylistPage = () => {
   const [isQueueReady, setIsQueueReady] = useState(false);
   const { playStatus, play, pause, setQueue } = useContext(PlayerContext);
   const [showDeleteMenu, setShowDeleteMenu] = useState(false);
-  
 
   useEffect(() => {
     if (loading) return;
@@ -245,13 +244,15 @@ const PlaylistPage = () => {
             <FontAwesomeIcon icon={faCirclePlay} className="icon-play" />
           </div>
         )}
-        <div className="ellipsis" onClick={toggleDeleteMenu}>
-          <FontAwesomeIcon icon={faEllipsis} />
-        </div>
+        {currPlaylist?.creatorid === user?.userid && (
+          <div className="ellipsis" onClick={toggleDeleteMenu}>
+            <FontAwesomeIcon icon={faEllipsis} />
+          </div>
+        )}
         {showDeleteMenu && (
           <div className="delete-menu" onClick={handleDeletePlaylist}>
             <FontAwesomeIcon icon={faTrashAlt} />
-            <h5>Delete Playlist</h5>
+            <h5 style={{ cursor: "pointer" }}>Delete Playlist</h5>
           </div>
         )}
       </div>
@@ -330,16 +331,28 @@ const PlaylistPage = () => {
               </h5>
             </div>
 
-            <div
-              className="delete-container"
-              onClick={() => handleDeleteTrack(item.trackid ?? 0)}
-            >
-              <FontAwesomeIcon icon={faTrashAlt} />
-            </div>
+            {currPlaylist?.creatorid === user?.userid && (
+              <div
+                className="delete-container"
+                onClick={() => handleDeleteTrack(item.trackid ?? 0)}
+              >
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </div>
+            )}
           </div>
         ))
       ) : (
-        <></>
+        <>
+          <h2
+            style={{
+              color: "grey",
+              fontWeight: "lighter",
+              marginLeft: "1.5vw",
+            }}
+          >
+            No Tracks yet
+          </h2>
+        </>
       )}
       <br />
       <br />

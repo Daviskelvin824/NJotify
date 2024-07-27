@@ -54,7 +54,7 @@ const ShowMorePage = () => {
   return (
     <div className="showmore-container">
       <TopBar />
-      <div className="body-container">
+      <div className="body-container">  
         <h1 className="title">{capitalizeCategory(category)}</h1>
         <h2 className="subtitle">{subtitle}</h2>
         {category === "album" ? (

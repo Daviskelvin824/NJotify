@@ -244,12 +244,20 @@ const ProfilePage = (props: Props) => {
                 (window.location.href = `/profilepage/${item.username}`)
               }
             >
-              <img
-                src={
-                  "http://localhost:8888/files/" + item.profilepageimage ?? ""
-                }
-                alt=""
-              />
+              {item.profilepageimage ? (
+                <img
+                  src={
+                    "http://localhost:8888/files/" + item.profilepageimage ?? ""
+                  }
+                  alt=""
+                />
+              ) : (
+                <>
+                  <div className="img-txt">
+                    <h1>{item.username.charAt(0)}</h1>
+                  </div>
+                </>
+              )}
               <div className="txt">
                 <h4>{item.username}</h4>
                 <h5>Profile</h5>
@@ -284,12 +292,20 @@ const ProfilePage = (props: Props) => {
                 (window.location.href = `/profilepage/${item.username}`)
               }
             >
-              <img
-                src={
-                  "http://localhost:8888/files/" + item.profilepageimage ?? ""
-                }
-                alt=""
-              />
+              {item.profilepageimage ? (
+                <img
+                  src={
+                    "http://localhost:8888/files/" + item.profilepageimage ?? ""
+                  }
+                  alt=""
+                />
+              ) : (
+                <>
+                  <div className="img-txt">
+                    <h1>{item.username.charAt(0)}</h1>
+                  </div>
+                </>
+              )}
               <div className="txt">
                 <h4>{item.username}</h4>
                 <h5>Profile</h5>
@@ -316,12 +332,20 @@ const ProfilePage = (props: Props) => {
                 (window.location.href = `/profilepage/${item.username}`)
               }
             >
-              <img
-                src={
-                  "http://localhost:8888/files/" + item.profilepageimage ?? ""
-                }
-                alt=""
-              />
+              {item.profilepageimage ? (
+                <img
+                  src={
+                    "http://localhost:8888/files/" + item.profilepageimage ?? ""
+                  }
+                  alt=""
+                />
+              ) : (
+                <>
+                  <div className="img-txt">
+                    <h1>{item.username.charAt(0)}</h1>
+                  </div>
+                </>
+              )}
               <div className="txt">
                 <h4>{item.username}</h4>
                 <h5>Profile</h5>

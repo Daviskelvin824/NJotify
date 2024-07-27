@@ -126,7 +126,17 @@ const LeftBar = () => {
               </div>
             ))
           ) : (
-            <></>
+            <>
+              <h5
+                style={{
+                  color: "grey",
+                  fontWeight: "lighter",
+                  marginLeft: "1.5vw",
+                }}
+              >
+                No Playlist Currently
+              </h5>
+            </>
           )}
         </div>
       </div>

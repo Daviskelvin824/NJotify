@@ -117,6 +117,7 @@ const CreateMusic = () => {
           setErrorMessage("Create Album fail due to Server Error");
         else {
           setErrorMessage("");
+          alert("New Music Created");
           window.location.reload();
         }
       }

@@ -86,7 +86,9 @@ const YourPost = () => {
               </div>
             ))
           ) : (
-            <></>
+            <>
+              <h5 style={{ color: "grey", fontWeight: "lighter" }}>Empty</h5>
+            </>
           )}
         </div>
       </div>
