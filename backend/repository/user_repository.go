@@ -21,4 +21,6 @@ type UserRepository interface {
 	ValidateFollowing(follow model.Follow) bool
 	GetFollowingPaginated(userId int, pageId int) []model.User
 	GetFollowerPaginated(userId int, pageId int) []model.User
+	AddToSearchHistory(model.SearchHistory)
+	GetSearchHistory(userId int)[]model.SearchHistory
 }

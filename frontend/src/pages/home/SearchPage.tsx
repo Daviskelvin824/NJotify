@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "../../styles/home/SearchPage.scss";
 import browseimg from "../../assets/browseallimg.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faMicrophone, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Album } from "../../model/Album";
 import { Playlist } from "../../model/Playlist";
 import { SingleTrack } from "../../model/SingleTrack";
@@ -28,6 +28,7 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const [inputValue, setinputValue] = useState("");
   const { showQueueBar, showSongDetailbar } = useContext(PlayerContext);
+
   useEffect(() => {
     if (loading) {
       return;
@@ -37,34 +38,35 @@ const SearchPage = () => {
     }
   }, [navigate, user, loading]);
 
-  const debounce = (func: (e: React.ChangeEvent<HTMLInputElement>) => void) => {
-    let timer: ReturnType<typeof setTimeout>;
-
-    return (e: React.ChangeEvent<HTMLInputElement>) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func(e);
-      }, 500);
-    };
-  };
-
   const sendQuery = async (query: string) => {
     try {
       const response = await sendquery(query);
-      setItems(response);
+      setItems(response ?? []);
       console.log("Search result:", response);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleInputChange = debounce(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setinputValue(value);
-      sendQuery(value);
+  useEffect(() => {
+    if (!inputValue) {
+      setItems([]);
+      return;
     }
-  );
+    const timer = setTimeout(() => {
+      sendQuery(inputValue);
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [inputValue]);
+
+  const setSearchInputValue = (value: string) => {
+    setinputValue(value);
+    sendQuery(value);
+  };
+
   const artists = items.filter(
     (item): item is User => "profilepageimage" in item
   );
@@ -92,13 +94,13 @@ const SearchPage = () => {
           <FontAwesomeIcon icon={faSearch} className="search-icon" />
           <input
             type="text"
-            // value={inputValue}
-            onChange={handleInputChange}
+            value={inputValue}
+            onChange={(e) => setinputValue(e.target.value)}
             placeholder="What do you want to play?"
           />
+          <AudioRecorder setSearchInputValue={setSearchInputValue} />
         </div>
       </div>
-      {/* <AudioRecorder /> */}
       {inputValue.length > 0 ? (
         <div className="search-result-container">
           <TopResult data={items[0]} allData={items} />
@@ -183,7 +185,7 @@ const SearchPage = () => {
         <div>
           <div className="recent-search">
             <h2>Recent Searches</h2>
-            <RecentSearch called={true} />
+            <RecentSearch />
           </div>
           <div className="browse-all">
             <h2>Browse All</h2>
@@ -235,6 +237,8 @@ const TopResult = ({
   useEffect(() => {
     (async () => {
       if (!data) {
+        setItem(newItemDisplayData());
+        setTrack([]);
         return;
       }
       const newItem = newItemDisplayData();
@@ -486,17 +490,38 @@ const TopResult = ({
   );
 };
 
-const AudioRecorder: React.FC = () => {
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [transcription, setTranscription] = useState<string | null>(null);
+interface AudioRecorderProps {
+  setSearchInputValue: (value: string) => void;
+}
+
+const AudioRecorder: React.FC<AudioRecorderProps> = ({
+  setSearchInputValue,
+}) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const startRecording = () => {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         const mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = (event) => {
-          setAudioBlob(event.data);
+          if (event.data) {
+            if (event.data) {
+              const formData = new FormData();
+              formData.append("file", event.data, "audio.flac");
+              fetch("http://localhost:5000/upload", {
+                method: "POST",
+                body: formData,
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  setSearchInputValue(data.transcription);
+                })
+                .catch((error) => {
+                  console.error("Error uploading audio:", error);
+                });
+            }
+          }
         };
         mediaRecorder.start();
         setTimeout(() => {
@@ -508,49 +533,12 @@ const AudioRecorder: React.FC = () => {
       });
   };
 
-  const uploadAudio = () => {
-    if (audioBlob) {
-      const formData = new FormData();
-      formData.append("file", audioBlob, "audio.flac");
-      fetch("http://localhost:5000/upload", {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Transcription:", data);
-          setTranscription(data.transcription); // Assuming 'data.transcription' contains the transcription result
-        })
-        .catch((error) => {
-          console.error("Error uploading audio:", error);
-        });
-    }
-  };
-
-  const playAudio = () => {
-    if (audioBlob && audioRef.current) {
-      const audioURL = URL.createObjectURL(audioBlob);
-      audioRef.current.src = audioURL;
-      audioRef.current.play();
-    }
-  };
-
   return (
-    <div>
-      <button onClick={startRecording}>Start Recording</button>
-      <button onClick={uploadAudio} disabled={!audioBlob}>
-        Upload Audio
-      </button>
-      <button onClick={playAudio} disabled={!audioBlob}>
-        Play Audio
+    <div className="automic-container">
+      <button onClick={startRecording}>
+        <FontAwesomeIcon icon={faMicrophone} />
       </button>
       <audio ref={audioRef} controls style={{ display: "none" }} />
-      {transcription && (
-        <div>
-          <h3>Transcription Result:</h3>
-          <p>{transcription}</p>
-        </div>
-      )}
     </div>
   );
 };

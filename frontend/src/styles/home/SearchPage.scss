@@ -22,7 +22,8 @@
         align-items: center;
         background-color: rgb(48, 48, 48);
         border-radius: 30px;
-        padding: 0 10px; 
+        // padding: 0 10px; 
+        padding-left: 10px;
         height: 4vh;
     
         input {
@@ -267,4 +268,24 @@
       }
     }
     
+    .automic-container{
+      display: flex;
+      align-items: center;
+      button{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background-color: rgb(30,215,96);
+        color: black;
+        border: none;
+        border-radius: 50%;
+        width: 2vw;
+        height: 2vw;
+        transition: background-color 0.3s ease;
+        &:hover {
+          background-color: rgba(5, 255, 63, 0.5); /* Light grey background on hover */
+        }
+      }
+    }
 }

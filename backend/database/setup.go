@@ -28,6 +28,7 @@ func migrate() {
 		DB.AutoMigrate(&model.Playlist{})
 		DB.AutoMigrate(&model.PlaylistDetail{})
 		DB.AutoMigrate(&model.AlbumHistory{})
+		DB.AutoMigrate(&model.SearchHistory{})
 	}
 }
 

@@ -15,6 +15,8 @@ type AlbumService interface {
 	GetTrackByAlbum(albumId int) response.TrackResponse
 	GetTrackByTrackId(trackId int) response.SingleTrackResponse
 	GetPopularTrackByArtist(artistId int) []response.PopularTrackResponse
+	GetPopularTrackByAlbum(albumId int) []response.SingleTrackResponse
+	GetMostPlayedTrackByArtist(artistId int) []response.SingleTrackResponse
 	AddTrackHistory(history request.AddTrackHistoryRequest)
 	AddAlbumHistory(history request.AlbumHistoryRequest)
 	GetRecentTrack(userId uint) []response.SingleTrackResponse

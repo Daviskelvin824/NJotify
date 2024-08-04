@@ -120,36 +120,44 @@ func (repo *UserRepositoryImpl) FindByArtistId(artistId uint) model.User {
 	return users
 }
 
-func (repo *UserRepositoryImpl) GetFFM(userId uint) response.FFMResponse{
+func (repo *UserRepositoryImpl) GetFFM(userId uint) response.FFMResponse {
 	var followingUser []model.User
 	var followerUser []model.User
 	var mutualFollowing []model.User
 
 	err := repo.Db.Table("users").Select("users.*").
-        Joins("INNER JOIN follows ON follows.following_id = users.user_id").
-        Where("follows.follower_id = ?", userId).
-        Scan(&followingUser).Error
-
-    helper.CheckPanic(err)
-
-	err = repo.Db.Table("users").Select("users.*").
-        Joins("INNER JOIN follows ON follows.follower_id = users.user_id").
-        Where("follows.following_id = ?", userId).
-        Scan(&followerUser).Error
+		Joins("INNER JOIN follows ON follows.following_id = users.user_id").
+		Where("follows.follower_id = ?", userId).
+		Scan(&followingUser).Error
 
 	helper.CheckPanic(err)
 
+	err = repo.Db.Table("users").Select("users.*").
+		Joins("INNER JOIN follows ON follows.follower_id = users.user_id").
+		Where("follows.following_id = ?", userId).
+		Scan(&followerUser).Error
 
-	followingMap := make(map[uint]bool)
-    for _, user := range followingUser {
-        followingMap[user.UserId] = true
-    }
+	helper.CheckPanic(err)
 
-    for _, user := range followerUser {
-        if _, exists := followingMap[user.UserId]; exists {
-            mutualFollowing = append(mutualFollowing, user)
-        }
-    }
+	err = repo.Db.Table("users").Select("users.*").
+		Joins("INNER JOIN follows ON follows.following_id = users.user_id").
+		Where("users.user_id != ?", userId).
+		Group("users.user_id").
+		Having("COUNT(DISTINCT follows.follower_id) > 1").
+		Scan(&mutualFollowing).Error
+
+	helper.CheckPanic(err)
+
+	// followingMap := make(map[uint]bool)
+	// for _, user := range followingUser {
+	//     followingMap[user.UserId] = true
+	// }
+
+	// for _, user := range followerUser {
+	//     if _, exists := followingMap[user.UserId]; exists {
+	//         mutualFollowing = append(mutualFollowing, user)
+	//     }
+	// }
 
 	toUserResponse := func(user model.User) response.UserResponse {
 		return response.UserResponse{
@@ -184,52 +192,64 @@ func (repo *UserRepositoryImpl) GetFFM(userId uint) response.FFMResponse{
 	}
 
 	ffmRes := response.FFMResponse{
-		FollowingUser: followingUserResponses,
-		FollowerUser:  followerUserResponses,
+		FollowingUser:       followingUserResponses,
+		FollowerUser:        followerUserResponses,
 		MutualFollowingUser: mutualFollowingResponses,
 	}
 
 	return ffmRes
-	
+
 }
 
-func (c *UserRepositoryImpl) FollowPerson(follow model.Follow){
+func (c *UserRepositoryImpl) FollowPerson(follow model.Follow) {
 	result := c.Db.Create(&follow)
 	helper.CheckPanic(result.Error)
 }
 
-func (c *UserRepositoryImpl) UnFollowPerson(follow model.Follow){
-	result := c.Db.Where("following_id = ? AND follower_id = ?", follow.FollowingID,follow.FollowerID).Delete(&follow)
+func (c *UserRepositoryImpl) UnFollowPerson(follow model.Follow) {
+	result := c.Db.Where("following_id = ? AND follower_id = ?", follow.FollowingID, follow.FollowerID).Delete(&follow)
 	helper.CheckPanic(result.Error)
 }
 
-func (c *UserRepositoryImpl) ValidateFollowing(follow model.Follow) bool{
-	result := c.Db.Where("following_id = ? AND follower_id = ?", follow.FollowingID,follow.FollowerID).First(&follow)
+func (c *UserRepositoryImpl) ValidateFollowing(follow model.Follow) bool {
+	result := c.Db.Where("following_id = ? AND follower_id = ?", follow.FollowingID, follow.FollowerID).First(&follow)
 	if result.RowsAffected > 0 {
-        return true
-    } else {
-        return false
-    }
+		return true
+	} else {
+		return false
+	}
 }
 
-func(repo *UserRepositoryImpl) GetFollowingPaginated(userId int, pageId int) []model.User{
+func (repo *UserRepositoryImpl) GetFollowingPaginated(userId int, pageId int) []model.User {
 	users := []model.User{}
 	err := repo.Db.Table("users").Select("users.*").
-        Joins("JOIN follows ON follows.following_id = users.user_id").
-        Where("follows.follower_id = ?", userId).Order("users.user_id ASC").Offset((pageId-1) * 4).Limit(4).
-        Find(&users).Error
+		Joins("JOIN follows ON follows.following_id = users.user_id").
+		Where("follows.follower_id = ?", userId).Order("users.user_id ASC").Offset((pageId - 1) * 4).Limit(4).
+		Find(&users).Error
 
-    helper.CheckPanic(err)
+	helper.CheckPanic(err)
 	return users
 }
 
-func(repo *UserRepositoryImpl) GetFollowerPaginated(userId int, pageId int) []model.User{
+func (repo *UserRepositoryImpl) GetFollowerPaginated(userId int, pageId int) []model.User {
 	users := []model.User{}
 	err := repo.Db.Table("users").Select("users.*").
-        Joins("JOIN follows ON follows.follower_id = users.user_id").
-        Where("follows.following_id = ?", userId).Order("users.user_id ASC").Offset((pageId-1) * 4).Limit(4).
-        Find(&users).Error
+		Joins("JOIN follows ON follows.follower_id = users.user_id").
+		Where("follows.following_id = ?", userId).Order("users.user_id ASC").Offset((pageId - 1) * 4).Limit(4).
+		Find(&users).Error
 
-    helper.CheckPanic(err)
+	helper.CheckPanic(err)
 	return users
+}
+
+func (repo *UserRepositoryImpl) AddToSearchHistory(history model.SearchHistory) {
+	result := repo.Db.Create(&history)
+	helper.CheckPanic(result.Error)
+}
+
+func (repo *UserRepositoryImpl) GetSearchHistory(userId int) []model.SearchHistory {
+	var histories []model.SearchHistory
+	result := repo.Db.Where("user_id = ?", userId).Find(&histories)
+	helper.CheckPanic(result.Error)
+	return histories
 }

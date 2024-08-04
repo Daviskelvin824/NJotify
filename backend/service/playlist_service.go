@@ -16,4 +16,5 @@ type PlaylistService interface {
 	DeletePlaylistTrack(playlistId uint,trackId uint)
 	GetPlaylistDetailByTrackId(trackId uint) response.PlaylistDetailResponse
 	GetPlaylistPaginated(userId int, pageId int) []response.PlaylistResponse
+	GetPopularTrackByPlaylist(playlistId int) []response.SingleTrackResponse
 }

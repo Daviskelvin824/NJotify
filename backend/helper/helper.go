@@ -3,9 +3,12 @@ package helper
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"unicode"
 
+	"github.com/Daviskelvin824/TPA-Website/data/response"
+	"github.com/gin-gonic/gin"
 	"gopkg.in/gomail.v2"
 )
 
@@ -130,4 +133,18 @@ func DamerauLevenshteinDistance(s1 string, s2 string) int {
 	 return a
 	}
 	return b
+}
+
+func GetUserFromMiddleware(ctx *gin.Context) (*response.UserResponse, error) {
+	rawUser, success := ctx.Get("user")
+	if !success {
+		return nil, errors.New("user not available from middleware")
+	}
+
+	user, ok := rawUser.(response.UserResponse)
+	if !ok {
+		return nil, errors.New("could not convert user from middleware")
+	}
+
+	return &user, nil
 }

@@ -367,3 +367,28 @@ func (c *UserServiceImpl) GetFollowerPaginated(userId int, pageId int) []respons
 	return users
 }
 
+func (c *UserServiceImpl) AddToSearchHistory(req request.AddToSearchHistoryRequest){
+	historyModel := model.SearchHistory{
+		UserId: req.UserId,
+		ResultId: req.ResultId,
+		ResultType: req.ResultType,
+	}
+
+	c.UserRepository.AddToSearchHistory(historyModel)
+}
+
+func (c *UserServiceImpl) GetSearchHistory(userId int)[]response.SearchHistoryResponse{
+	result := c.UserRepository.GetSearchHistory(userId)
+	var histories []response.SearchHistoryResponse
+	for _,value := range result{
+		history := response.SearchHistoryResponse{
+			SearchHistoryId: value.SearchHistoryId,
+			UserId: value.UserId,
+			ResultId: value.ResultId,
+			ResultType: value.ResultType,
+		}
+		histories = append(histories, history)
+	}
+	return histories
+}
+

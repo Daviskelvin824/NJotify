@@ -16,4 +16,5 @@ func PlaylistRoute(router *gin.Engine, playlistController *controller.PLaylistCo
 	router.POST("/deleteplaylisttrack", playlistController.DeletePlaylistTrack)
 	router.POST("/getplaylistdetailbytrackid", playlistController.GetPlaylistDetailByTrackId)
 	router.GET("/showmore/playlist",playlistController.ShowmorePlaylist)
+	router.POST("/getpopulartrackbyplaylist",playlistController.GetPopularTrackByPlaylist)
 }

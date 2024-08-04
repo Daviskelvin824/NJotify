@@ -12,7 +12,6 @@ import (
 	"github.com/Daviskelvin824/TPA-Website/data/request"
 	"github.com/Daviskelvin824/TPA-Website/data/response"
 	"github.com/Daviskelvin824/TPA-Website/helper"
-	"github.com/Daviskelvin824/TPA-Website/middleware"
 	"github.com/Daviskelvin824/TPA-Website/service"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -628,8 +627,8 @@ func(controller *UserController) UpdateUserNotif(ctx *gin.Context){
 	err := ctx.ShouldBindJSON(&notifReq)
 	helper.CheckPanic(err)
 
-	user,err2 := middleware.GetUserFromJWT(ctx)
-	helper.CheckPanic(err2)
+	user, err := helper.GetUserFromMiddleware(ctx)
+	helper.CheckPanic(err)
 
 	currUser,_ := controller.userService.FindByEmail(user.Email)
 	currUser.ArtistNotification = &notifReq.ArtistNotif
@@ -639,4 +638,33 @@ func(controller *UserController) UpdateUserNotif(ctx *gin.Context){
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
 		return
 	}
+}
+
+func(controller *UserController) AddToSearchHistory(ctx *gin.Context){
+	searchReq := request.AddToSearchHistoryRequest{}
+	err := ctx.ShouldBindJSON(&searchReq)
+	helper.CheckPanic(err)
+	fmt.Println(searchReq)
+
+	controller.userService.AddToSearchHistory(searchReq)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   nil,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func(controller *UserController) GetSearchHistory(ctx *gin.Context){
+	userIdStr := ctx.Query("userid")
+	userId, _ := strconv.Atoi(userIdStr)
+	result := controller.userService.GetSearchHistory(userId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
 }

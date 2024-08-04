@@ -22,4 +22,6 @@ type UserService interface {
 	ValidateFollowing(req request.FollowRequest) bool
 	GetFollowingPaginated(userId int, pageId int) []response.UserResponse
 	GetFollowerPaginated(userId int, pageId int) []response.UserResponse
+	AddToSearchHistory(req request.AddToSearchHistoryRequest)
+	GetSearchHistory(userId int)[]response.SearchHistoryResponse
 }

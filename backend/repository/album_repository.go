@@ -15,6 +15,8 @@ type AlbumRepository interface {
 	GetTrackByAlbum(albumId int) []model.Track
 	GetTrackByTrackId(trackId int) model.Track
 	GetPopularTrackByArtist(artistId int) []response.PopularTrackResponse
+	GetPopularTrackByAlbum(albumId int) []model.Track
+	GetMostPlayedTrackByArtist(artistId int) []model.Track
 	AddTrackHistory (history model.TrackHistory)
 	AddAlbumHistory (history model.AlbumHistory)
 	GetRecentTrack(userId uint) []model.Track

@@ -60,6 +60,10 @@ func(c *PlaylistRepositoryImpl) DeletePlaylist(playlistId uint){
 	var playlist2 model.PlaylistDetail
 	result2 := c.DB.Where("playlist_id = ?",playlistId).Delete(&playlist2)
 	helper.CheckPanic(result2.Error)
+
+	var searchHistory model.SearchHistory
+    result3 := c.DB.Where("result_id = ? AND result_type = ?", playlistId, "Playlist").Delete(&searchHistory)
+    helper.CheckPanic(result3.Error)
 }
 
 func (c *PlaylistRepositoryImpl) DeletePlaylistTrack(playlistId uint, trackId uint) {
@@ -84,4 +88,18 @@ func(c *PlaylistRepositoryImpl) GetPlaylistPaginated(userId int, pageId int) []m
 	result := c.DB.Where("creator_id = ?",userId).Order("playlist_id ASC").Offset((pageId-1) * 4).Limit(4).Find(&playlists)
 	helper.CheckPanic(result.Error)
 	return playlists
+}
+
+func (c *PlaylistRepositoryImpl)GetPopularTrackByPlaylist(playlistId int)[]model.Track{
+	var popularTracks []model.Track
+	c.DB.Table("tracks").
+		Select("tracks.track_id, tracks.album_id, tracks.track_titles,tracks.file_paths").
+		Joins("JOIN playlist_details ON playlist_details.track_id = tracks.track_id").
+		Joins("LEFT JOIN track_histories ON tracks.track_id = track_histories.track_id").
+		Where("playlist_details.playlist_id = ?", playlistId).
+		Group("tracks.track_id, tracks.album_id, tracks.track_titles, tracks.file_paths").
+		Order("COUNT(track_histories.track_id) DESC").
+		Scan(&popularTracks )
+
+	return popularTracks 
 }

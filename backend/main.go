@@ -6,6 +6,7 @@ import (
 	"github.com/Daviskelvin824/TPA-Website/controller"
 	"github.com/Daviskelvin824/TPA-Website/database"
 	"github.com/Daviskelvin824/TPA-Website/helper"
+	"github.com/Daviskelvin824/TPA-Website/middleware"
 	"github.com/Daviskelvin824/TPA-Website/repository"
 	"github.com/Daviskelvin824/TPA-Website/router"
 	"github.com/Daviskelvin824/TPA-Website/service"
@@ -69,7 +70,7 @@ func init() {
 // }
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.DebugMode)
 	routes := gin.Default()
 	validator := validator.New()
 
@@ -97,9 +98,12 @@ func main() {
 	playlistController := controller.NewPlaylistController(playlistService)
 	searchController := controller.NewSearchController(userService,albumService,playlistService)
 
+	// create middleware
+	authMiddleware := middleware.CreateAuthMiddleware(userService)
+
 	//set routing
-	router.UserRoute(routes, userController)
-	router.AlbumRoute(routes, albumController)
+	router.UserRoute(routes, userController, authMiddleware)
+	router.AlbumRoute(routes, albumController, authMiddleware)
 	router.PlaylistRoute(routes, playlistController)
 	routes.GET("/search",searchController.Search)
 

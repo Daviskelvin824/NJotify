@@ -25,19 +25,18 @@ type PlaylistDetailReq struct {
 	PlaylistId int `json:"playlistid"`
 }
 
-type TrackIdReq struct{
+type TrackIdReq struct {
 	TrackId int `json:"trackid"`
 }
 
-
-func NewPlaylistController(playlistservice service.PlaylistService) *PLaylistController{
+func NewPlaylistController(playlistservice service.PlaylistService) *PLaylistController {
 	return &PLaylistController{
 		PlaylistService: playlistservice,
 	}
 }
 
-func(controller *PLaylistController) GetAllPlaylist(ctx *gin.Context){
-	result := controller.PlaylistService.GetAllPlaylist();
+func (controller *PLaylistController) GetAllPlaylist(ctx *gin.Context) {
+	result := controller.PlaylistService.GetAllPlaylist()
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -47,7 +46,7 @@ func(controller *PLaylistController) GetAllPlaylist(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) CreatePlaylist(ctx *gin.Context){
+func (controller *PLaylistController) CreatePlaylist(ctx *gin.Context) {
 	playlistReq := request.CreatePlaylistRequest{}
 	form, err := ctx.MultipartForm()
 	helper.CheckPanic(err)
@@ -74,11 +73,11 @@ func (controller *PLaylistController) CreatePlaylist(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) GetUserPlaylist(ctx *gin.Context){
+func (controller *PLaylistController) GetUserPlaylist(ctx *gin.Context) {
 	var req PlaylistReq
 	err := ctx.ShouldBindJSON(&req)
 	helper.CheckPanic(err)
-	fmt.Println("User id = ",req.UserId)
+	fmt.Println("User id = ", req.UserId)
 
 	result := controller.PlaylistService.GetUserPlaylist(uint(req.UserId))
 	webResponse := response.WebResponse{
@@ -90,7 +89,7 @@ func (controller *PLaylistController) GetUserPlaylist(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) AddToPlaylist(ctx *gin.Context){
+func (controller *PLaylistController) AddToPlaylist(ctx *gin.Context) {
 	addToPlaylistReq := request.AddToPlaylistRequest{}
 	err := ctx.ShouldBindJSON(&addToPlaylistReq)
 	addToPlaylistReq.DateAdded = time.Now()
@@ -107,7 +106,7 @@ func (controller *PLaylistController) AddToPlaylist(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) GetPlaylistDetail(ctx *gin.Context){
+func (controller *PLaylistController) GetPlaylistDetail(ctx *gin.Context) {
 	var req PlaylistDetailReq
 	err := ctx.ShouldBindJSON(&req)
 	helper.CheckPanic(err)
@@ -123,7 +122,7 @@ func (controller *PLaylistController) GetPlaylistDetail(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) GetPlaylistByPlaylistId(ctx *gin.Context){
+func (controller *PLaylistController) GetPlaylistByPlaylistId(ctx *gin.Context) {
 	var req PlaylistDetailReq
 	err := ctx.ShouldBindJSON(&req)
 	helper.CheckPanic(err)
@@ -139,7 +138,7 @@ func (controller *PLaylistController) GetPlaylistByPlaylistId(ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) DeletePlaylist (ctx *gin.Context){
+func (controller *PLaylistController) DeletePlaylist(ctx *gin.Context) {
 	var req PlaylistDetailReq
 	err := ctx.ShouldBindJSON(&req)
 	helper.CheckPanic(err)
@@ -155,13 +154,13 @@ func (controller *PLaylistController) DeletePlaylist (ctx *gin.Context){
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
 
-func (controller *PLaylistController) DeletePlaylistTrack (ctx *gin.Context){
+func (controller *PLaylistController) DeletePlaylistTrack(ctx *gin.Context) {
 	req := request.DeletePlaylistTrackReq{}
 	err := ctx.ShouldBindJSON(&req)
 	helper.CheckPanic(err)
 	fmt.Println(req)
 
-	controller.PlaylistService.DeletePlaylistTrack(uint(req.PlaylistId),uint(req.TrackId))
+	controller.PlaylistService.DeletePlaylistTrack(uint(req.PlaylistId), uint(req.TrackId))
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
@@ -170,7 +169,7 @@ func (controller *PLaylistController) DeletePlaylistTrack (ctx *gin.Context){
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse.Data)
 }
-func (controller *PLaylistController) GetPlaylistDetailByTrackId (ctx *gin.Context){
+func (controller *PLaylistController) GetPlaylistDetailByTrackId(ctx *gin.Context) {
 	var req TrackIdReq
 	err := ctx.ShouldBindJSON(&req)
 	helper.CheckPanic(err)
@@ -187,19 +186,36 @@ func (controller *PLaylistController) GetPlaylistDetailByTrackId (ctx *gin.Conte
 
 }
 
-func (controller *PLaylistController) ShowmorePlaylist (ctx *gin.Context){
+func (controller *PLaylistController) ShowmorePlaylist(ctx *gin.Context) {
 	pageIdStr := ctx.Query("pageid")
 	creatorIdStr := ctx.Query("creatorid")
 	pageId, err := strconv.Atoi(pageIdStr)
 	helper.CheckPanic(err)
 	creatorId, err2 := strconv.Atoi(creatorIdStr)
 	helper.CheckPanic(err2)
-	result := controller.PlaylistService.GetPlaylistPaginated(creatorId,pageId)
+	result := controller.PlaylistService.GetPlaylistPaginated(creatorId, pageId)
 	webResponse := response.WebResponse{
 		Code:   http.StatusOK,
 		Status: "Ok",
 		Data:   result,
-	}	
+	}
 	ctx.Header("Content-type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func (controller *PLaylistController) GetPopularTrackByPlaylist(ctx *gin.Context) {
+	var req PlaylistDetailReq
+	err := ctx.ShouldBindJSON(&req)
+	helper.CheckPanic(err)
+	fmt.Println(req)
+
+	result := controller.PlaylistService.GetPopularTrackByPlaylist(req.PlaylistId)
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   result,
+	}
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+
 }

@@ -209,6 +209,52 @@ func (c *AlbumServiceImpl) GetPopularTrackByArtist(artistId int) []response.Popu
 	fmt.Println(err)
 	return response
 }
+func (c *AlbumServiceImpl) GetPopularTrackByAlbum(albumId int) []response.SingleTrackResponse {
+	// var trackRedis []response.PopularTrackResponse
+	// trackIdStr := strconv.FormatUint(uint64(artistId), 10)
+	// err:=c.RedisService.GetData("popular_track_by_id:"+trackIdStr, &trackRedis)
+	// if(err==nil){
+	// 	return trackRedis
+	// }
+	result := c.AlbumRepository.GetPopularTrackByAlbum(albumId)
+	trackRes := make([]response.SingleTrackResponse, 0) 
+	for _,value := range result{
+		track := response.SingleTrackResponse{
+			AlbumID: value.AlbumID,
+			TrackID: value.TrackID,
+			TrackTitles: value.TrackTitles,
+			FilePaths: value.FilePaths,
+		}
+		trackRes = append(trackRes, track)
+	}
+	// err = c.RedisService.SetData("popular_track_by_id:"+trackIdStr,response, time.Minute*10)
+	// fmt.Println(err)
+	return trackRes
+}
+
+func (c *AlbumServiceImpl) GetMostPlayedTrackByArtist(artistId int) []response.SingleTrackResponse {
+	// var trackRedis []response.PopularTrackResponse
+	// trackIdStr := strconv.FormatUint(uint64(artistId), 10)
+	// err:=c.RedisService.GetData("popular_track_by_id:"+trackIdStr, &trackRedis)
+	// if(err==nil){
+	// 	return trackRedis
+	// }
+	result := c.AlbumRepository.GetMostPlayedTrackByArtist(artistId)
+	trackRes := make([]response.SingleTrackResponse, 0) 
+	for _,value := range result{
+		track := response.SingleTrackResponse{
+			AlbumID: value.AlbumID,
+			TrackID: value.TrackID,
+			TrackTitles: value.TrackTitles,
+			FilePaths: value.FilePaths,
+		}
+		trackRes = append(trackRes, track)
+	}
+
+	// err = c.RedisService.SetData("popular_track_by_id:"+trackIdStr,response, time.Minute*10)
+	// fmt.Println(err)
+	return trackRes
+}
 
 func(c *AlbumServiceImpl) AddTrackHistory(history request.AddTrackHistoryRequest){
 	err := c.Validate.Struct(history)

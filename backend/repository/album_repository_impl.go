@@ -82,6 +82,36 @@ func (c *AlbumRepositoryImpl) GetPopularTrackByArtist(artistId int) []response.P
 	return popularTracks
 }
 
+func (c *AlbumRepositoryImpl) GetPopularTrackByAlbum(albumId int) []model.Track {
+	var popularTracks []model.Track
+
+	c.Db.Table("tracks").
+		Select("tracks.track_id, tracks.album_id, tracks.track_titles,tracks.file_paths").
+		Joins("JOIN albums ON albums.album_id = tracks.album_id").
+		Joins("LEFT JOIN track_histories ON tracks.track_id = track_histories.track_id").
+		Where("albums.album_id = ?", albumId).
+		Group("tracks.track_id, tracks.album_id, albums.image_path, tracks.track_titles, tracks.file_paths").
+		Order("COUNT(track_histories.track_id) DESC").
+		Scan(&popularTracks)
+
+	return popularTracks
+}
+
+func (c *AlbumRepositoryImpl) GetMostPlayedTrackByArtist(artistId int) []model.Track {
+	var mostPlayedTracks  []model.Track
+
+	c.Db.Table("tracks").
+		Select("tracks.track_id, tracks.album_id, tracks.track_titles,tracks.file_paths").
+		Joins("JOIN albums ON albums.album_id = tracks.album_id").
+		Joins("LEFT JOIN track_histories ON tracks.track_id = track_histories.track_id").
+		Where("albums.artist_id = ?", artistId).
+		Group("tracks.track_id, tracks.album_id, tracks.track_titles, tracks.file_paths").
+		Order("COUNT(track_histories.track_id) DESC").
+		Scan(&mostPlayedTracks )
+
+	return mostPlayedTracks 
+}
+
 func(c *AlbumRepositoryImpl) AddTrackHistory(history model.TrackHistory){
 	result := c.Db.Create(&history)
 	helper.CheckPanic(result.Error)

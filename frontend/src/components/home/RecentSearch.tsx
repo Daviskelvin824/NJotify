@@ -15,11 +15,9 @@ import "../../styles/components/RecentSearch.scss";
 import { PlayerContext } from "../../context/PlayerContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-type Props = {
-  called: boolean;
-};
+
 type SearchType = User | Album | SingleTrack | Playlist;
-const RecentSearch = (props: Props) => {
+const RecentSearch = () => {
   const [recentSearch, setrecentSearch] = useState<SearchHistory[]>([]);
   const { showQueueBar, showSongDetailbar } = useContext(PlayerContext);
   const [detailedSearchResults, setDetailedSearchResults] = useState<
@@ -50,7 +48,7 @@ const RecentSearch = (props: Props) => {
     };
 
     void fetchSearchHistory();
-  }, [props]);
+  }, [user]);
 
   useEffect(() => {
     const fetchDetails = async () => {

@@ -177,3 +177,18 @@ func (c *PlaylistServiceImpl) GetPlaylistPaginated(userId int, pageId int) []res
 	}
 	return playlistRes
 }
+
+func(c *PlaylistServiceImpl) GetPopularTrackByPlaylist(playlistId int) []response.SingleTrackResponse{
+	result := c.PlaylistRepository.GetPopularTrackByPlaylist(playlistId)
+	trackRes := make([]response.SingleTrackResponse,0) 
+	for _,value := range result{
+		track := response.SingleTrackResponse{
+			AlbumID: value.AlbumID,
+			TrackID: value.TrackID,
+			TrackTitles: value.TrackTitles,
+			FilePaths: value.FilePaths,
+		}
+		trackRes = append(trackRes, track)
+	}
+	return trackRes
+}

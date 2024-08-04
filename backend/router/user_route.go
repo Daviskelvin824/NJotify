@@ -2,15 +2,14 @@ package router
 
 import (
 	"github.com/Daviskelvin824/TPA-Website/controller"
-	"github.com/Daviskelvin824/TPA-Website/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoute(router *gin.Engine, userController *controller.UserController) {
+func UserRoute(router *gin.Engine, userController *controller.UserController, authMiddleware gin.HandlerFunc) {
 	router.GET("/get-users", userController.FindAll)
 	router.POST("/signup", userController.Create)
 	router.POST("/login", userController.Signin)
-	router.GET("/validate", middleware.Validate, userController.Authenticate)
+	router.GET("/validate", authMiddleware, userController.Authenticate)
 	router.GET("/verify", userController.Verify)
 	router.POST("/findaccount", userController.FindAccount)
 	router.GET("/forgotpassword", userController.ForgotPassword)
@@ -31,5 +30,7 @@ func UserRoute(router *gin.Engine, userController *controller.UserController) {
 	router.POST("/validateuserfollowing", userController.ValidateFollowing)
 	router.GET("/showmore/following", userController.ShowMoreFollowing)
 	router.GET("/showmore/follower", userController.ShowMoreFollower)
-	router.POST("/updateusernotif", userController.UpdateUserNotif)
+	router.POST("/updateusernotif", authMiddleware, userController.UpdateUserNotif)
+	router.POST("/addtosearchhistory", userController.AddToSearchHistory)
+	router.GET("/getsearchhistory", userController.GetSearchHistory)
 }

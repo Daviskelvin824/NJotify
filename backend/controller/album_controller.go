@@ -9,7 +9,6 @@ import (
 	"github.com/Daviskelvin824/TPA-Website/data/request"
 	"github.com/Daviskelvin824/TPA-Website/data/response"
 	"github.com/Daviskelvin824/TPA-Website/helper"
-	"github.com/Daviskelvin824/TPA-Website/middleware"
 	"github.com/Daviskelvin824/TPA-Website/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -61,8 +60,8 @@ func(controller *AlbumController) GetAllTrack(ctx *gin.Context){
 func (controller *AlbumController) CreateAlbum(ctx *gin.Context) {
 	createAlbumReq := request.CreateAlbumRequest{}
 
-	user, _ := middleware.GetUserFromJWT(ctx)
-	fmt.Println(user)
+	user, err := helper.GetUserFromMiddleware(ctx)
+	helper.CheckPanic(err)
 
 	form, err := ctx.MultipartForm()
 	helper.CheckPanic(err)
@@ -162,9 +161,6 @@ func (controller *AlbumController) GetFile(ctx *gin.Context) {
 func (controller *AlbumController) CreateTrack(ctx *gin.Context) {
 	createTrackReq := request.CreateTrackRequest{}
 
-	user, _ := middleware.GetUserFromJWT(ctx)
-	fmt.Println(user)
-
 	form, err := ctx.MultipartForm()
 	helper.CheckPanic(err)
 	albumIDStr := form.Value["id"]
@@ -210,6 +206,40 @@ func (controller *AlbumController) GetPopularTrackByArtist(ctx *gin.Context) {
 	fmt.Println("req = ", req)
 
 	responses := controller.albumService.GetPopularTrackByArtist(req.ArtistId)
+	fmt.Println("popular artist = ", responses)
+
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   responses,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func (controller *AlbumController) GetPopularTrackByAlbum(ctx *gin.Context) {
+	var req AlbumIdRequest
+	err := ctx.ShouldBindJSON(&req)
+	helper.CheckPanic(err)
+	fmt.Println("req = ", req)
+
+	responses := controller.albumService.GetPopularTrackByAlbum(int(req.AlbumId))
+	webResponse := response.WebResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   responses,
+	}	
+	ctx.Header("Content-type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse.Data)
+}
+
+func (controller *AlbumController) GetMostPlayedTrackByArtist(ctx *gin.Context) {
+	var req AlbumRequest
+	err := ctx.ShouldBindJSON(&req)
+	helper.CheckPanic(err)
+	fmt.Println("req = ", req)
+
+	responses := controller.albumService.GetMostPlayedTrackByArtist(req.ArtistId)
 	fmt.Println("popular artist = ", responses)
 
 	webResponse := response.WebResponse{
@@ -300,7 +330,10 @@ func(controller *AlbumController) ShowMoreAlbum(ctx *gin.Context){
 }
 func(controller *AlbumController) ShowMoreRecentAlbum(ctx *gin.Context){
 	pageIdStr := ctx.Query("pageid")
-	user,_ := middleware.GetUserFromJWT(ctx)
+
+	user, err := helper.GetUserFromMiddleware(ctx)
+	helper.CheckPanic(err)
+
 	fmt.Println(pageIdStr)
 	pageId, err := strconv.Atoi(pageIdStr)
 	helper.CheckPanic(err)

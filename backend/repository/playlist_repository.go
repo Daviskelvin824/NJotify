@@ -13,4 +13,5 @@ type PlaylistRepository interface {
 	DeletePlaylistTrack(playlistId uint,trackId uint)
 	GetPlaylistDetailByTrackId(trackId uint) model.PlaylistDetail
 	GetPlaylistPaginated(userId int, pageId int) []model.Playlist
+	GetPopularTrackByPlaylist(playlistId int)[]model.Track
 }
