@@ -24,8 +24,8 @@ func init() {
 	err := godotenv.Load()
 	helper.CheckPanic(err)
 	googleOuthConfig = &oauth2.Config{
-		ClientID:     "749857715630-k3r648nbnckvs3u73tpomc50t8iv8rbu.apps.googleusercontent.com",
-		ClientSecret: "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",
+		ClientID:     "",
+		ClientSecret: "",
 		RedirectURL:  "http://localhost:5173/",
 		Scopes:       []string{"profile", "email"},
 		Endpoint:     google.Endpoint,
